@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Login } from "./components/Login/Login";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import { Items } from "./routes/Home/Items/Items";
+import { ModalsProvider } from "@mantine/modals";
+import { globalModals } from "./modals/availableModals";
 
 const queryClient = new QueryClient();
 
@@ -14,7 +16,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <MantineProvider>
-          <AppRoutes />
+          <ModalsProvider modals={globalModals}>
+            <AppRoutes />
+          </ModalsProvider>
         </MantineProvider>
       </BrowserRouter>
     </QueryClientProvider>

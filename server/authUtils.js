@@ -8,7 +8,7 @@ const users = {
     'xyz@xyz.com': 'cdsnofwejfds',
 }
 
-const signIn = (req, res) => {
+function signIn(req, res) {
     const { email, password } = req.body;
     if (!users[email] || users[email] !== password) {
         return res.status(401).json({ error: "Invalid email or password" });
@@ -19,7 +19,7 @@ const signIn = (req, res) => {
     res.json({ token });
 }
 
-const welcome = (req, res) => {
+function welcome(req, res) {
     const token = req.headers.authorization?.split(' ')?.[1];
 
     if (!token) {
