@@ -7,6 +7,7 @@ const API_URL = "http://localhost:3000/items";
 export interface Item {
   id: number;
   name: string;
+  quantity: number;
   unit: string;
   expiryDate: string;
   expiryType: string;
@@ -48,9 +49,8 @@ export const useUpdateItem = () => {
       axios
         .put(`${API_URL}/${updatedItem.id}`, updatedItem)
         .then((res) => res.data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
-      queryClient.invalidateQueries({ queryKey: ["items", data.id] });
     },
   });
 };

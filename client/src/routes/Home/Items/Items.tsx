@@ -1,7 +1,22 @@
-import { Burger, Button, Container, Menu, rem, Table } from "@mantine/core";
+import {
+  Burger,
+  Button,
+  Container,
+  Menu,
+  NumberInput,
+  rem,
+  Table,
+} from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconCoins, IconEdit, IconTrash } from "@tabler/icons-react";
-import { Item, useDeleteItem, useItems } from "../../../api/item";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+  Item,
+  useDeleteItem,
+  useItems,
+  useUpdateItem,
+} from "../../../api/item";
+import { useDebouncedCallback } from "@mantine/hooks";
+import { useState } from "react";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
@@ -15,6 +30,7 @@ export function Items() {
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Name</Table.Th>
+            <Table.Th>Quantity</Table.Th>
             <Table.Th>Unit</Table.Th>
             <Table.Th>Expiry Type</Table.Th>
             <Table.Th>Expiry Date</Table.Th>
@@ -25,43 +41,62 @@ export function Items() {
           </Table.Tr>
         </Table.Thead>
 
-        {items?.map((item) => {
-          return (
-            <Table.Tr>
-              <Table.Td>{item.name}</Table.Td>
-              <Table.Td>{item.unit}</Table.Td>
-              <Table.Td>{item.expiryType}</Table.Td>
-              <Table.Td>{item.expiryDate}</Table.Td>
-              <Table.Td>
-                {new Date() < new Date(item.expiryDate) ? ":)" : ":("}
-              </Table.Td>
-              <Table.Td style={{ display: "flex", flexWrap: "wrap" }}>
-                {item.labels.map((label) => (
-                  <div
-                    key={label.id}
-                    style={{
-                      backgroundColor: label.colour,
-                      borderRadius: "4px",
-                      padding: "4px",
-                    }}
-                  >
-                    {label.name}
-                  </div>
-                ))}
-              </Table.Td>
-              <Table.Td>{item.notes?.join(", ")}</Table.Td>
-              <Table.Td>
-                <ItemActions item={item} />
-              </Table.Td>
-            </Table.Tr>
-          );
-        })}
+        {items?.map((item) => (
+          <ItemRow key={item.id} item={item} />
+        ))}
       </Table>
 
       <Container style={{ position: "fixed", bottom: 50, right: 50 }}>
         <AddItemBtn />
       </Container>
     </Container>
+  );
+}
+
+function ItemRow({ item }: { item: Item }) {
+  const [quantity, setQuantity] = useState(item.quantity);
+  const { mutate: updateItem } = useUpdateItem();
+
+  const handleQuantityChange = useDebouncedCallback((value: number) => {
+    updateItem({ ...item, quantity: value });
+  }, 1000);
+  return (
+    <Table.Tr>
+      <Table.Td>{item.name}</Table.Td>
+      <Table.Td>
+        <NumberInput
+          value={quantity}
+          onChange={(value) => {
+            setQuantity(value as number);
+            handleQuantityChange(value as number);
+          }}
+        />
+      </Table.Td>
+      <Table.Td>{item.unit}</Table.Td>
+      <Table.Td>{item.expiryType}</Table.Td>
+      <Table.Td>{item.expiryDate}</Table.Td>
+      <Table.Td>
+        {new Date() < new Date(item.expiryDate) ? ":)" : ":("}
+      </Table.Td>
+      <Table.Td style={{ display: "flex", flexWrap: "wrap" }}>
+        {item.labels.map((label) => (
+          <div
+            key={label.id}
+            style={{
+              backgroundColor: label.colour,
+              borderRadius: "4px",
+              padding: "4px",
+            }}
+          >
+            {label.name}
+          </div>
+        ))}
+      </Table.Td>
+      <Table.Td>{item.notes?.join(", ")}</Table.Td>
+      <Table.Td>
+        <ItemActions item={item} />
+      </Table.Td>
+    </Table.Tr>
   );
 }
 
@@ -85,19 +120,6 @@ function ItemActions({ item }: { item: Item }) {
           }
         >
           Edit
-        </Menu.Item>
-        <Menu.Item
-          leftSection={
-            <IconCoins style={{ width: rem(14), height: rem(14) }} />
-          }
-          onClick={() =>
-            modals.openContextModal({
-              modal: "editAmountRemaining",
-              innerProps: { item },
-            })
-          }
-        >
-          Edit Amount
         </Menu.Item>
 
         <Menu.Item
