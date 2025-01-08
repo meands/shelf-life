@@ -9,8 +9,10 @@ expiry date tracker
 - [ ] Category API
 
   - [ ] Add custom category
-  - [ ] Get categories
-  - [ ] Delete category
-  - [ ] Update category
+  - [x] Get categories
+  - [x] Delete category
+  - [x] Update category
 
-- [ ] Icon performance
+- [x] Icon performance
+- [ ] Fix deletion of label from item
+- [ ] Track amount via Quantity and Unit

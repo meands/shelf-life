@@ -3,6 +3,8 @@ const cors = require("cors");
 
 const { signIn, welcome } = require("./authUtils");
 const itemRouter = require("./api/item/itemApi");
+const labelRouter = require("./api/label/labelApi");
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -16,6 +18,8 @@ app.post("/signIn", signIn);
 app.get("/welcome", welcome);
 
 app.use("/items", itemRouter);
+
+app.use("/labels", labelRouter);
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000");

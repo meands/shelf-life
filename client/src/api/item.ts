@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Label } from "./label";
 
 const API_URL = "http://localhost:3000/items";
 
@@ -9,7 +10,7 @@ export interface Item {
   unit: string;
   expiryDate: string;
   expiryType: string;
-  category: string;
+  labels: Label[];
   notes: string[];
 }
 

@@ -22,6 +22,7 @@ export function Home() {
       </AppShell.Header>
       <AppShell.Navbar p="md">
         <Link to="items">Items</Link>
+        <Link to="labels">Labels</Link>
       </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />

@@ -1,34 +1,18 @@
 const express = require('express');
 const router = express.Router();
-
-let items = [
-    {
-        id: 1,
-        name: "mince",
-        unit: '500g',
-        expiryDate: "2025-01-01",
-        expiryType: "best before",
-        category: "Food",
-        notes: ["store in fridge"],
-    },
-    {
-        id: 2,
-        name: "banana",
-        expiryDate: "2025-01-01",
-        expiryType: "best before",
-        category: "Food",
-        notes: ["store in fridge"],
-    },
-];
+const { items, labels, itemLabelRelations } = require('../../data/mockData');
 
 router.get('/', (req, res) => {
-    res.status(200).json(items);
+    res.status(200).json(items.map(item => ({
+        ...item,
+        labels: labels.filter(label => itemLabelRelations.find(relation => relation.itemId === item.id && relation.labelId === label.id))
+    })));
 });
 
 router.get('/:id', (req, res) => {
     const item = items.find(i => i.id === parseInt(req.params.id));
     if (!item) return res.status(404).json({ message: 'Item not found' });
-    res.status(200).json(item);
+    res.status(200).json({ ...item, labels: labels.filter(label => itemLabelRelations.find(relation => relation.itemId === item.id && relation.labelId === label.id)) });
 });
 
 router.post("/", (req, res) => {
@@ -49,6 +33,27 @@ router.put('/:id', (req, res) => {
         ...req.body,
         id: items[index].id, // preserve the original id
     };
+    if (req.body.labels) {
+        const newLabels = req.body.labels.filter(label => !labels.find(l => l.name === label.name));
+        const removedLabels = labels.filter(label => !req.body.labels.find(l => l.name === label.name) && !newLabels.find(l => l.name === label.name));
+
+        // console.log(removedLabels, newLabels);
+
+        // for (const label of removedLabels) {
+        //     delete labels[labels.findIndex(l => l.name === label.name)];
+        //     delete itemLabelRelations[itemLabelRelations.findIndex(relation => relation.labelId === label.id)];
+        // }
+        for (const label of newLabels) {
+            labels.push({
+                ...label,
+                id: labels.length > 0 ? Math.max(...labels.map(l => l.id)) + 1 : 1,
+            });
+            itemLabelRelations.push({
+                itemId: items[index].id,
+                labelId: labels.find(l => l.name === label.name).id,
+            });
+        }
+    }
     res.json(items[index]);
 });
 

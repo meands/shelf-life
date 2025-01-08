@@ -16,10 +16,10 @@ export function Items() {
           <Table.Tr>
             <Table.Th>Name</Table.Th>
             <Table.Th>Unit</Table.Th>
-            <Table.Th>Category</Table.Th>
-            <Table.Th>Expiry Date</Table.Th>
             <Table.Th>Expiry Type</Table.Th>
+            <Table.Th>Expiry Date</Table.Th>
             <Table.Th>Status</Table.Th>
+            <Table.Th>Labels</Table.Th>
             <Table.Th>Notes</Table.Th>
             <Table.Th>Actions</Table.Th>
           </Table.Tr>
@@ -30,11 +30,24 @@ export function Items() {
             <Table.Tr>
               <Table.Td>{item.name}</Table.Td>
               <Table.Td>{item.unit}</Table.Td>
-              <Table.Td>{item.category}</Table.Td>
-              <Table.Td>{item.expiryDate}</Table.Td>
               <Table.Td>{item.expiryType}</Table.Td>
+              <Table.Td>{item.expiryDate}</Table.Td>
               <Table.Td>
                 {new Date() < new Date(item.expiryDate) ? ":)" : ":("}
+              </Table.Td>
+              <Table.Td style={{ display: "flex", flexWrap: "wrap" }}>
+                {item.labels.map((label) => (
+                  <div
+                    key={label.id}
+                    style={{
+                      backgroundColor: label.colour,
+                      borderRadius: "4px",
+                      padding: "4px",
+                    }}
+                  >
+                    {label.name}
+                  </div>
+                ))}
               </Table.Td>
               <Table.Td>{item.notes?.join(", ")}</Table.Td>
               <Table.Td>

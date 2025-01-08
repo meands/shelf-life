@@ -7,6 +7,7 @@ import { Login } from "./components/Login/Login";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import { Items } from "./routes/Home/Items/Items";
 import { ModalsProvider } from "@mantine/modals";
+import { Labels } from "./routes/Home/Labels/Labels";
 import { globalModals } from "./modals/availableModals";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ function AppRoutes() {
         }
       >
         <Route path="items" element={<Items />} />
+        <Route path="labels" element={<Labels />} />
       </Route>
     </Routes>
   );
