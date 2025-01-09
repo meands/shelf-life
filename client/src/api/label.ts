@@ -17,6 +17,18 @@ export function useGetLabels() {
   });
 }
 
+export function useCreateLabel() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (label: Omit<Label, "id">) =>
+      axios.post(API_URL, label).then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["labels"] });
+    },
+  });
+}
+
 export function useUpdateLabel() {
   const queryClient = useQueryClient();
 

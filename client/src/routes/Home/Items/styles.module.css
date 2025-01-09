@@ -1,0 +1,18 @@
+.labelSwatch {
+  width: var(--mantine-spacing-xl);
+  max-width: fit-content;
+  transition: all 0.5s ease;
+}
+
+.labelSwatch:hover {
+  width: 100%;
+}
+
+.labelSwatch span {
+  opacity: 0;
+  transition: all 0.5s ease-in;
+}
+
+.labelSwatch:hover span {
+  opacity: 1;
+}

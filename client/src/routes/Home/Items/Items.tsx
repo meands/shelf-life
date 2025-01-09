@@ -4,6 +4,7 @@ import {
   Container,
   Menu,
   NumberInput,
+  Paper,
   rem,
   Table,
 } from "@mantine/core";
@@ -17,7 +18,8 @@ import {
 } from "../../../api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
-
+import { Label } from "../../../api/label";
+import styles from "./styles.module.css";
 export function Items() {
   const { data: items, isLoading, error } = useItems();
 
@@ -53,6 +55,19 @@ export function Items() {
   );
 }
 
+function LabelSwatch({ label }: { label: Label }) {
+  return (
+    <Paper
+      p="xs"
+      shadow="sm"
+      className={styles.labelSwatch}
+      style={{ backgroundColor: label.colour }}
+    >
+      <span>{label.name}</span>
+    </Paper>
+  );
+}
+
 function ItemRow({ item }: { item: Item }) {
   const [quantity, setQuantity] = useState(item.quantity);
   const { mutate: updateItem } = useUpdateItem();
@@ -85,16 +100,7 @@ function ItemRow({ item }: { item: Item }) {
       </Table.Td>
       <Table.Td style={{ display: "flex", flexWrap: "wrap" }}>
         {item.labels.map((label) => (
-          <div
-            key={label.id}
-            style={{
-              backgroundColor: label.colour,
-              borderRadius: "4px",
-              padding: "4px",
-            }}
-          >
-            {label.name}
-          </div>
+          <LabelSwatch key={label.id} label={label} />
         ))}
       </Table.Td>
       <Table.Td>{item.notes.map((note) => note.note).join(", ")}</Table.Td>

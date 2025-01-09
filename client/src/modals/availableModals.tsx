@@ -1,5 +1,6 @@
 import {
   Button,
+  ColorInput,
   Group,
   NumberInput,
   Select,
@@ -9,11 +10,17 @@ import {
 import { useForm } from "@mantine/form";
 import { ContextModalProps } from "@mantine/modals";
 import { Item, useCreateItem, useUpdateItem } from "../api/item";
-import { Label, useGetLabels, useUpdateLabel } from "../api/label";
+import {
+  Label,
+  useCreateLabel,
+  useGetLabels,
+  useUpdateLabel,
+} from "../api/label";
 
 export const globalModals = {
   addItem: AddItem,
   editItem: EditItem,
+  addLabel: AddLabel,
   editLabel: EditLabel,
 };
 
@@ -177,7 +184,13 @@ function EditLabel({
       })}
     >
       <TextInput label="Name" {...form.getInputProps("name")} />
-      <TextInput label="Colour" {...form.getInputProps("colour")} />
+
+      <ColorInput
+        label="Colour"
+        value={form.values.colour}
+        onChange={(value) => form.setFieldValue("colour", value)}
+      />
+
       <TextInput label="Description" {...form.getInputProps("description")} />
 
       <Button type="submit" loading={isPending} mt="md">
@@ -209,4 +222,39 @@ function getLabels(
     }));
 
   return [...existingLabelItems, ...newLabelItems];
+}
+
+function AddLabel({ context, id }: ContextModalProps) {
+  const { mutate: addLabel, isPending } = useCreateLabel();
+
+  const form = useForm({
+    initialValues: {
+      name: "",
+      colour: "",
+      description: "",
+    },
+  });
+
+  return (
+    <form
+      onSubmit={form.onSubmit((values) => {
+        addLabel(values);
+        context.closeModal(id);
+      })}
+    >
+      <TextInput label="Name" {...form.getInputProps("name")} />
+
+      <ColorInput
+        label="Colour"
+        value={form.values.colour}
+        onChange={(value) => form.setFieldValue("colour", value)}
+      />
+
+      <TextInput label="Description" {...form.getInputProps("description")} />
+
+      <Button type="submit" loading={isPending} mt="md">
+        Submit
+      </Button>
+    </form>
+  );
 }

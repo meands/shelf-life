@@ -2,18 +2,16 @@ expiry date tracker
 
 ## TODO
 
+- [ ] labels need fixing - comparison of labels when updating item
+- [ ] write server in ts?
+
+  - [ ] share types
+
 - [ ] DB setup
 - [ ] Password hashing
 - [ ] Auth
+- [x] Category API
 - [x] Item API
-- [ ] Category API
-
-  - [ ] Add custom category
-  - [x] Get categories
-  - [x] Delete category
-  - [x] Update category
-
 - [x] Icon performance
-- [ ] Fix deletion of label from item
 - [x] Track amount via Quantity and Unit
 - [x] Notes impl

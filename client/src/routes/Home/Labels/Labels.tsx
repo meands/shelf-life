@@ -1,4 +1,4 @@
-import { Burger, Container, Menu, rem, Table } from "@mantine/core";
+import { Burger, Button, Container, Menu, rem, Table } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { Label, useDeleteLabel, useGetLabels } from "../../../api/label";
@@ -41,6 +41,15 @@ export function Labels() {
           </Table.Tr>
         ))}
       </Table>
+
+      <Button
+        onClick={() =>
+          modals.openContextModal({ modal: "addLabel", innerProps: {} })
+        }
+        mt="md"
+      >
+        Add Label
+      </Button>
     </Container>
   );
 }
