@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Label } from "./label";
+import { Note } from "./note";
 
 const API_URL = "http://localhost:3000/items";
 
@@ -12,7 +13,7 @@ export interface Item {
   expiryDate: string;
   expiryType: string;
   labels: Label[];
-  notes: string[];
+  notes: Note[];
 }
 
 export const useItems = () => {
@@ -33,7 +34,7 @@ export const useCreateItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newItem: Omit<Item, "id">) =>
+    mutationFn: (newItem: Omit<Item, "id" | "notes"> & { notes: string[] }) =>
       axios.post(API_URL, newItem).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
@@ -45,7 +46,7 @@ export const useUpdateItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (updatedItem: Item) =>
+    mutationFn: (updatedItem: Omit<Item, "notes"> & { notes: string[] }) =>
       axios
         .put(`${API_URL}/${updatedItem.id}`, updatedItem)
         .then((res) => res.data),

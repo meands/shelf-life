@@ -16,4 +16,4 @@ expiry date tracker
 - [x] Icon performance
 - [ ] Fix deletion of label from item
 - [x] Track amount via Quantity and Unit
-- [ ] Notes table
+- [x] Notes impl

@@ -29,17 +29,14 @@ function AddItem({ context, id }: ContextModalProps) {
       expiryDate: "",
       expiryType: "Best before",
       labels: [] as Label[],
-      notes: "",
+      notes: [] as string[],
     },
   });
 
   return (
     <form
       onSubmit={form.onSubmit((values) => {
-        addItem({
-          ...values,
-          notes: [values.notes],
-        });
+        addItem(values);
         context.closeModal(id);
       })}
     >
@@ -70,8 +67,14 @@ function AddItem({ context, id }: ContextModalProps) {
           }}
         />
       )}
-      <TextInput label="Notes" {...form.getInputProps("notes")} />
 
+      <TextInput
+        label="Notes"
+        value={form.values.notes.join(", ")}
+        onChange={(e) =>
+          form.setFieldValue("notes", e.target.value.split(", "))
+        }
+      />
       <Button type="submit" loading={isPending} mt="md">
         Submit
       </Button>
@@ -95,7 +98,7 @@ function EditItem({
       expiryDate: innerProps.item.expiryDate,
       expiryType: innerProps.item.expiryType,
       labels: innerProps.item.labels,
-      notes: innerProps.item.notes,
+      notes: innerProps.item.notes.map((note) => note.note),
     },
   });
 
@@ -136,7 +139,13 @@ function EditItem({
           }}
         />
       )}
-      <TextInput label="Notes" {...form.getInputProps("notes")} />
+      <TextInput
+        label="Notes"
+        value={form.values.notes.join(", ")}
+        onChange={(e) =>
+          form.setFieldValue("notes", e.target.value.split(", "))
+        }
+      />
 
       <Button type="submit" loading={isPending} mt="md">
         Submit

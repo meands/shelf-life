@@ -58,8 +58,13 @@ function ItemRow({ item }: { item: Item }) {
   const { mutate: updateItem } = useUpdateItem();
 
   const handleQuantityChange = useDebouncedCallback((value: number) => {
-    updateItem({ ...item, quantity: value });
+    updateItem({
+      ...item,
+      quantity: value,
+      notes: item.notes.map((note) => note.note),
+    });
   }, 1000);
+
   return (
     <Table.Tr>
       <Table.Td>{item.name}</Table.Td>
@@ -92,7 +97,7 @@ function ItemRow({ item }: { item: Item }) {
           </div>
         ))}
       </Table.Td>
-      <Table.Td>{item.notes?.join(", ")}</Table.Td>
+      <Table.Td>{item.notes.map((note) => note.note).join(", ")}</Table.Td>
       <Table.Td>
         <ItemActions item={item} />
       </Table.Td>
