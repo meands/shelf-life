@@ -177,8 +177,9 @@ class ItemLabelRelationTable {
     }
 }
 
+
 module.exports = {
-    labels: new LabelTable(labels),
-    items: new ItemTable(items),
-    itemLabelRelations: new ItemLabelRelationTable(itemLabelRelations)
+    labelTable: new LabelTable(labels),
+    itemTable: new ItemTable(items),
+    itemLabelRelationTable: new ItemLabelRelationTable(itemLabelRelations)
 }; 

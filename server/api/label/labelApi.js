@@ -1,33 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const { itemLabelRelations, labels } = require('../../data/mockData');
+const { itemLabelRelationTable, labelTable } = require('../../data/mockData');
 
 router.get('/', (req, res) => {
-    res.status(200).json(labels.getAllLabels());
+    res.status(200).json(labelTable.getAllLabels());
 });
 
 router.get('/:id', (req, res) => {
-    const label = labels.getLabel(parseInt(req.params.id));
+    const label = labelTable.getLabel(parseInt(req.params.id));
     if (!label) return res.status(404).json({ message: 'Label not found' });
     res.status(200).json(label);
 });
 
 router.post('/', (req, res) => {
-    labels.addLabel(req.body);
+    labelTable.addLabel(req.body);
     res.status(201).json(req.body);
 });
 
 router.put('/:id', (req, res) => {
-    labels.updateLabel(req.body);
+    labelTable.updateLabel(req.body);
     res.status(201).json(req.body);
 });
 
 router.delete('/:id', (req, res) => {
-    if (labels.getLabel(parseInt(req.params.id))) {
-        if (itemLabelRelations.getAllRelations().some(relation => relation.labelId === parseInt(req.params.id))) {
+    if (labelTable.getLabel(parseInt(req.params.id))) {
+        if (itemLabelRelationTable.getAllRelations().some(relation => relation.labelId === parseInt(req.params.id))) {
             return res.status(400).json({ message: 'Cannot delete label as it is associated with items' });
         }
-        labels.removeLabel(req.body);
+        labelTable.removeLabel(req.body);
         res.status(201).json(req.body);
     } else {
         res.status(404).json({ message: 'Label not found' });
