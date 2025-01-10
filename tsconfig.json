@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@shared/*": ["shared/*"]
+      },
+      "rootDir": ".",
+      "outDir": "./dist",
+      "moduleResolution": "node",
+      "strict": true,
+      "esModuleInterop": true
+    },
+    "include": ["shared/**/*"]
+  }
+  
