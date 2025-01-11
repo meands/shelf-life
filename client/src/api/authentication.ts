@@ -1,24 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { SignInRequest, SignInResponse, WelcomeResponse } from "@shared/types";
 
 const API_URL = "http://localhost:3000";
 
-interface SignInCredentials {
-  email: string;
-  password: string;
-}
-
-interface SignInResponse {
-  token: string;
-  message: string;
-}
-
-interface WelcomeResponse {
-  message: string;
-}
-
 export const useSignIn = () => {
-  return useMutation<SignInResponse, Error, SignInCredentials>({
+  return useMutation<SignInResponse, Error, SignInRequest>({
     mutationFn: async (credentials) => {
       const response = await axios.post(`${API_URL}/signIn`, credentials);
       return response.data;

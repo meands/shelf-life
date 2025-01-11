@@ -1,12 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-
-export interface Label {
-  id: number;
-  name: string;
-  colour: string;
-  description?: string;
-}
+import { Label } from "@shared/types";
 
 export const API_URL = "http://localhost:3000/labels";
 

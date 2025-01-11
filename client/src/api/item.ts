@@ -1,20 +1,8 @@
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Label } from "./label";
-import { Note } from "./note";
+import { Item } from "@shared/types";
 
 const API_URL = "http://localhost:3000/items";
-
-export interface Item {
-  id: number;
-  name: string;
-  quantity: number;
-  unit: string;
-  expiryDate: string;
-  expiryType: string;
-  labels: Label[];
-  notes: Note[];
-}
 
 export const useItems = () => {
   return useQuery<Item[]>({

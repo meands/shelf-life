@@ -10,16 +10,13 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
-import {
-  Item,
-  useDeleteItem,
-  useItems,
-  useUpdateItem,
-} from "../../../api/item";
+import { useDeleteItem, useItems, useUpdateItem } from "@api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
-import { Label } from "../../../api/label";
 import styles from "./styles.module.css";
+import { Item } from "@shared/types";
+import { Label } from "@shared/types";
+
 export function Items() {
   const { data: items, isLoading, error } = useItems();
 

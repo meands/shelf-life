@@ -1,4 +1,1 @@
-export interface Note {
-  id: number;
-  note: string;
-}
+import { Note } from "@shared/types";

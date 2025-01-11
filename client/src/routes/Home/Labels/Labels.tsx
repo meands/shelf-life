@@ -1,7 +1,8 @@
 import { Burger, Button, Container, Menu, rem, Table } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
-import { Label, useDeleteLabel, useGetLabels } from "../../../api/label";
+import { useDeleteLabel, useGetLabels } from "@api/label";
+import { Label } from "@shared/types";
 
 export function Labels() {
   const { data: labels, isLoading, error } = useGetLabels();
