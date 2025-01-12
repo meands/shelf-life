@@ -74,6 +74,14 @@ export interface UpdateNoteRequest {
   note: string;
 }
 
+export interface User {
+  id: number;
+  displayName: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
 // API Responses
 export interface ApiResponse<T> {
   data: T;

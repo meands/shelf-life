@@ -6,6 +6,7 @@ import {
   labelTable,
   noteTable,
 } from "@data/mockData";
+import { checkPermission } from "@api/auth/itemMiddleware";
 
 const router = express.Router();
 
@@ -28,25 +29,29 @@ router.get("/", (_req: Request, res: Response) => {
   );
 });
 
-router.get("/:id", (req: Request<{ id: string }>, res: Response) => {
-  const item = itemTable.getItem(parseInt(req.params.id));
-  if (!item) return res.status(404).json({ message: "Item not found" });
+router.get(
+  "/:id",
+  checkPermission,
+  (req: Request<{ id: string }>, res: Response) => {
+    const item = itemTable.getItem(parseInt(req.params.id));
+    if (!item) return res.status(404).json({ message: "Item not found" });
 
-  res.status(200).json({
-    ...item,
-    labels: labelTable
-      .getAllLabels()
-      .filter((label: Label) =>
-        itemLabelRelationTable
-          .getAllRelations()
-          .find(
-            (relation) =>
-              relation.itemId === item.id && relation.labelId === label.id
-          )
-      ),
-    notes: noteTable.getItemNotes(item.id),
-  });
-});
+    res.status(200).json({
+      ...item,
+      labels: labelTable
+        .getAllLabels()
+        .filter((label: Label) =>
+          itemLabelRelationTable
+            .getAllRelations()
+            .find(
+              (relation) =>
+                relation.itemId === item.id && relation.labelId === label.id
+            )
+        ),
+      notes: noteTable.getItemNotes(item.id),
+    });
+  }
+);
 
 router.post("/", (req: Request<{}, {}, CreateItemRequest>, res: Response) => {
   const newItem = {

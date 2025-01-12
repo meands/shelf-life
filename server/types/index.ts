@@ -4,6 +4,12 @@ export { CreateItemRequest, UpdateItemRequest } from "@shared/types";
 export { CreateLabelRequest, UpdateLabelRequest } from "@shared/types";
 export { CreateNoteRequest, UpdateNoteRequest } from "@shared/types";
 export { ApiResponse, ErrorResponse } from "@shared/types";
+export { User } from "@shared/types";
+
+export interface UserItemRelation {
+  userId: number;
+  itemId: number;
+}
 
 export interface ItemNoteRelation {
   itemId: number;

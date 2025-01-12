@@ -1,26 +1,31 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { SignInRequest } from "@shared/types";
+import { userTable } from "@data/mockData";
 const jwtKey = process.env.TOKEN_SECRET || "default-secret-key";
-const jwtExpirySeconds = 300;
-
-const users: Record<string, string> = {
-  "abc@abc.com": "wefjsdlfksj",
-  "xyz@xyz.com": "cdsnofwejfds",
-};
+const jwtExpirySeconds = 60000;
 
 export function signIn(req: Request, res: Response): void {
   const { email, password } = req.body as SignInRequest;
+  const users = userTable.getAllUsers();
 
-  if (!users[email] || users[email] !== password) {
+  console.log(users);
+  const user = users.find(
+    (user) => user.email === email && user.password === password
+  );
+  if (!user) {
     res.status(401).json({ error: "Invalid email or password" });
     return;
   }
 
-  const token = jwt.sign({ email }, jwtKey, {
-    algorithm: "HS256",
-    expiresIn: jwtExpirySeconds,
-  });
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    jwtKey,
+    {
+      algorithm: "HS256",
+      expiresIn: jwtExpirySeconds,
+    }
+  );
 
   res.json({ token });
 }

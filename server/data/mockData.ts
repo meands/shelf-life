@@ -1,8 +1,9 @@
-import { Item, Label, Note, ItemLabelRelation } from "@types";
+import { ItemLabelRelationTable } from "@data/ItemLabelRelationTable";
 import { ItemTable } from "@data/ItemTable";
 import { LabelTable } from "@data/LabelTable";
-import { ItemLabelRelationTable } from "@data/ItemLabelRelationTable";
 import { NoteTable } from "@data/NoteTable";
+import { ItemLabelRelation, Label, Note } from "@types";
+import { UserTable } from "./UserTable";
 
 const labels: Label[] = [
   {
@@ -148,9 +149,61 @@ const itemNoteRelations = [
   },
 ];
 
+const users = [
+  {
+    id: 1,
+    displayName: "user1",
+    email: "abc@abc.com",
+    password: "abcde12345",
+    role: "admin",
+  },
+  {
+    id: 2,
+    displayName: "user2",
+    email: "xyz@abc.com",
+    password: "xyz12345",
+    role: "user",
+  },
+];
+
+const userItemRelations = [
+  {
+    userId: 1,
+    itemId: 1,
+  },
+  {
+    userId: 1,
+    itemId: 2,
+  },
+  {
+    userId: 1,
+    itemId: 3,
+  },
+  {
+    userId: 2,
+    itemId: 4,
+  },
+  {
+    userId: 2,
+    itemId: 5,
+  },
+];
+
+export const roles = [
+  {
+    role: "admin",
+    permissions: ["read_item"],
+  },
+  {
+    role: "user",
+    permissions: ["read_item"],
+  },
+];
+
 export const labelTable = new LabelTable(labels);
 export const itemTable = new ItemTable(items);
 export const itemLabelRelationTable = new ItemLabelRelationTable(
   itemLabelRelations
 );
 export const noteTable = new NoteTable(notes, itemNoteRelations);
+export const userTable = new UserTable(users, userItemRelations, itemTable);
