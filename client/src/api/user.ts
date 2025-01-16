@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { User, CreateUserRequest, UpdateUserRequest } from "@shared/types";
+import { CreateUserRequest, UpdateUserRequest } from "@shared/types";
 import { axiosInstance } from "../App";
-
+import { User } from "@prisma/client";
 export const useGetUsers = () => {
   return useQuery<User[]>({
     queryKey: ["users"],

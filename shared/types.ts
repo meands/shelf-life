@@ -13,18 +13,6 @@ export interface WelcomeResponse {
   message: string;
 }
 
-// Items
-export interface Item {
-  id: number;
-  name: string;
-  quantity: number;
-  unit: string;
-  expiryDate: string;
-  expiryType: string;
-  labels: Label[];
-  notes: Note[];
-}
-
 export interface CreateItemRequest {
   name: string;
   quantity: number;
@@ -40,7 +28,7 @@ export interface UpdateItemRequest extends CreateItemRequest {
 }
 
 // Labels
-export interface Label {
+interface Label {
   id: number;
   name: string;
   colour: string;
@@ -57,12 +45,6 @@ export interface UpdateLabelRequest extends CreateLabelRequest {
   id: number;
 }
 
-// Notes
-export interface Note {
-  id: number;
-  note: string;
-}
-
 export interface CreateNoteRequest {
   itemId: number;
   note: string;
@@ -72,14 +54,6 @@ export interface UpdateNoteRequest {
   id: number;
   itemId: number;
   note: string;
-}
-
-export interface User {
-  id: number;
-  displayName: string;
-  email: string;
-  password: string;
-  role: string;
 }
 
 export interface CreateUserRequest {

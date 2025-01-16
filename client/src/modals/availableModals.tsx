@@ -9,13 +9,9 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { ContextModalProps } from "@mantine/modals";
-import { Item, useCreateItem, useUpdateItem } from "../api/item";
-import {
-  Label,
-  useCreateLabel,
-  useGetLabels,
-  useUpdateLabel,
-} from "../api/label";
+import { useCreateItem, useUpdateItem } from "../api/item";
+import { useCreateLabel, useGetLabels, useUpdateLabel } from "../api/label";
+import { Item, Label } from "@prisma/client";
 
 export const globalModals = {
   addItem: AddItem,

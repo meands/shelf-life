@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Item } from "@shared/types";
 import { axiosInstance } from "../App";
+import { Item } from "@prisma/client";
 
 export const useItems = () => {
   return useQuery<Item[]>({

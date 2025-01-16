@@ -2,8 +2,7 @@ import { Burger, Button, Container, Menu, rem, Table } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useDeleteLabel, useGetLabels } from "@api/label";
-import { Label } from "@shared/types";
-
+import { Label } from "@prisma/client";
 export function Labels() {
   const { data: labels, isLoading, error } = useGetLabels();
 

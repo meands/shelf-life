@@ -1,56 +1,106 @@
 import express, { Request, Response } from "express";
-import { itemLabelRelationTable, labelTable } from "../../data/mockData";
-import { CreateLabelRequest, UpdateLabelRequest } from "../../types";
+import { CreateLabelRequest, UpdateLabelRequest } from "@shared/types";
+import prisma from "../../services/db";
+import { Prisma } from "@prisma/client";
+import { authenticateUser } from "../../middleware/auth";
 
 const router = express.Router();
 
-router.get("/", (_req: Request, res: Response) => {
-  res.status(200).json(labelTable.getAllLabels());
-});
+router.use(authenticateUser);
 
-router.get("/:id", (req: Request, res: Response) => {
-  const label = labelTable.getLabel(parseInt(req.params.id));
-  if (!label) {
-    res.status(404).json({ message: "Label not found" });
-    return;
+router.get("/", async (_req: Request, res: Response) => {
+  try {
+    const labels = await prisma.label.findMany();
+    res.status(200).json(labels);
+  } catch (error) {
+    console.error("Error fetching labels:", error);
+    res.status(500).json({ message: "Error fetching labels" });
   }
-  res.status(200).json(label);
 });
 
-router.post("/", (req: Request, res: Response) => {
-  const labelData = req.body as CreateLabelRequest;
-  const newLabel = labelTable.addLabel(labelData);
-  res.status(201).json(newLabel);
-});
-
-router.put("/:id", (req: Request, res: Response) => {
-  const labelData = req.body as UpdateLabelRequest;
-  labelTable.updateLabel(labelData);
-  res.status(200).json(labelData);
-});
-
-router.delete("/:id", (req: Request, res: Response) => {
-  const labelId = parseInt(req.params.id);
-  const label = labelTable.getLabel(labelId);
-
-  if (!label) {
-    res.status(404).json({ message: "Label not found" });
-    return;
-  }
-
-  if (
-    itemLabelRelationTable
-      .getAllRelations()
-      .some((relation) => relation.labelId === labelId)
-  ) {
-    res.status(400).json({
-      message: "Cannot delete label as it is associated with items",
+router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    const label = await prisma.label.findUnique({
+      where: { id: parseInt(req.params.id) },
     });
-    return;
+    if (!label) return res.status(404).json({ message: "Label not found" });
+    res.status(200).json(label);
+  } catch (error) {
+    console.error("Error fetching label:", error);
+    res.status(500).json({ message: "Error fetching label" });
   }
+});
 
-  labelTable.removeLabel(label);
-  res.status(200).json(label);
+router.post(
+  "/",
+  async (req: Request<{}, {}, CreateLabelRequest>, res: Response) => {
+    try {
+      const label = await prisma.label.create({
+        data: req.body,
+      });
+      res.status(201).json(label);
+    } catch (error) {
+      console.error("Error creating label:", error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002") {
+          res.status(400).json({ message: "Label name must be unique" });
+          return;
+        }
+      }
+      res.status(500).json({ message: "Error creating label" });
+    }
+  }
+);
+
+router.put(
+  "/:id",
+  async (
+    req: Request<{ id: string }, {}, UpdateLabelRequest>,
+    res: Response
+  ) => {
+    try {
+      const label = await prisma.label.update({
+        where: { id: parseInt(req.params.id) },
+        data: req.body,
+      });
+      res.status(200).json(label);
+    } catch (error) {
+      console.error("Error updating label:", error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2025") {
+          res.status(404).json({ message: "Label not found" });
+          return;
+        }
+        if (error.code === "P2002") {
+          res.status(400).json({ message: "Label name must be unique" });
+          return;
+        }
+      }
+      res.status(500).json({ message: "Error updating label" });
+    }
+  }
+);
+
+router.delete("/:id", async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    await prisma.label.delete({
+      where: { id: parseInt(req.params.id) },
+    });
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting label:", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        res.status(404).json({ message: "Label not found" });
+        return;
+      }
+      if (error.code === "P2003") {
+        res.status(400).json({ message: "Cannot delete label that is in use" });
+        return;
+      }
+    }
+    res.status(500).json({ message: "Error deleting label" });
+  }
 });
 
 export default router;

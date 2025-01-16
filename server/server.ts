@@ -3,7 +3,7 @@ import "module-alias/register";
 import express from "express";
 import cors from "cors";
 
-import { signIn, welcome } from "@api/auth/authApi";
+import { signIn } from "@api/auth/authApi";
 
 import itemRouter from "@api/item/itemApi";
 import labelRouter from "@api/label/labelApi";
@@ -17,7 +17,6 @@ app.use(express.json());
 app.use(cors());
 
 app.post("/signIn", signIn);
-app.get("/welcome", welcome);
 app.use("/users", userRouter);
 
 app.use(authenticateUser);

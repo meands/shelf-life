@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Label } from "@shared/types";
 import { axiosInstance } from "../App";
-
+import { Label } from "@prisma/client";
 export function useGetLabels() {
   return useQuery({
     queryKey: ["labels"],

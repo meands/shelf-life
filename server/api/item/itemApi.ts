@@ -1,195 +1,178 @@
 import express, { Request, Response } from "express";
-import { CreateItemRequest, Label, Note, UpdateItemRequest } from "@types";
-import {
-  itemLabelRelationTable,
-  itemTable,
-  labelTable,
-  noteTable,
-  userTable,
-} from "@data/mockData";
-import { checkItemPermission, decodeToken } from "@middleware/itemMiddleware";
+import prisma from "../../services/db";
+import { Prisma } from "@prisma/client";
+import { authenticateUser } from "../../middleware/auth";
+import { UpdateItemRequest } from "@shared/types";
+import { CreateItemRequest } from "@shared/types";
 
 const router = express.Router();
 
-router.get(
-  "/",
-  decodeToken,
-  checkItemPermission,
-  (_req: Request, res: Response) => {
-    res.status(200).json(
-      (userTable.getUserItems((_req as any).user.id) || [])?.map((item) => ({
-        ...item,
-        labels: labelTable
-          .getAllLabels()
-          .filter((label: Label) =>
-            itemLabelRelationTable
-              .getAllRelations()
-              .find(
-                (relation) =>
-                  relation.itemId === item.id && relation.labelId === label.id
-              )
-          ),
-        notes: noteTable.getItemNotes(item.id),
-      }))
-    );
-  }
-);
+// Apply authentication middleware to all routes
+router.use(authenticateUser);
 
-router.get(
-  "/:id",
-  decodeToken,
-  checkItemPermission,
-  (req: Request<{ id: string }>, res: Response) => {
-    const item = itemTable.getItem(parseInt(req.params.id));
-    if (!item) return res.status(404).json({ message: "Item not found" });
-
-    res.status(200).json({
-      ...item,
-      labels: labelTable
-        .getAllLabels()
-        .filter((label: Label) =>
-          itemLabelRelationTable
-            .getAllRelations()
-            .find(
-              (relation) =>
-                relation.itemId === item.id && relation.labelId === label.id
-            )
-        ),
-      notes: noteTable.getItemNotes(item.id),
+router.get("/", async (req: Request, res: Response) => {
+  try {
+    const items = await prisma.item.findMany({
+      where: {
+        userId: (req as any).user.id,
+      },
+      include: {
+        labels: true,
+        notes: true,
+      },
     });
+    res.status(200).json(items);
+  } catch (error) {
+    console.error("Error fetching items:", error);
+    res.status(500).json({ message: "Error fetching items" });
   }
-);
+});
+
+router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    const item = await prisma.item.findUnique({
+      where: {
+        id: parseInt(req.params.id),
+        userId: (req as any).user.id,
+      },
+      include: {
+        labels: true,
+        notes: true,
+      },
+    });
+    if (!item) return res.status(404).json({ message: "Item not found" });
+    res.status(200).json(item);
+  } catch (error) {
+    console.error("Error fetching item:", error);
+    res.status(500).json({ message: "Error fetching item" });
+  }
+});
 
 router.post(
   "/",
-  decodeToken,
-  checkItemPermission,
-  (req: Request<{}, {}, CreateItemRequest>, res: Response) => {
-    const newItem = {
-      id: itemTable.getNextId(),
-      ...req.body,
-    };
-    itemTable.addItem(newItem);
-    userTable.addUserItemRelation(newItem.id, (req as any).user.id);
+  async (req: Request<{}, {}, CreateItemRequest>, res: Response) => {
+    try {
+      const { notes: noteTexts, labels, ...itemData } = req.body;
 
-    if (req.body.labels) {
-      updateLabelTable(
-        newItem.id,
-        labelTable
-          .getAllLabels()
-          .filter((label: Label) =>
-            itemLabelRelationTable
-              .getAllRelations()
-              .find(
-                (relation) =>
-                  relation.itemId === newItem.id &&
-                  relation.labelId === label.id
-              )
-          ),
-        req.body.labels
-      );
-    }
+      const item = await prisma.item.create({
+        data: {
+          ...itemData,
+          expiryDate: new Date(itemData.expiryDate),
+          userId: (req as any).user.id,
+          notes: {
+            create: noteTexts.map((note) => ({ note })),
+          },
+          labels: {
+            connect: labels.map((label) => ({ id: label.id })),
+          },
+        },
+        include: {
+          labels: true,
+          notes: true,
+        },
+      });
 
-    if (req.body.notes) {
-      updateNoteTable(newItem.id, req.body.notes);
+      res.status(201).json(item);
+    } catch (error) {
+      console.error("Error creating item:", error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2025") {
+          res.status(400).json({ message: "One or more labels not found" });
+          return;
+        }
+      }
+      res.status(500).json({ message: "Error creating item" });
     }
-    res.status(201).json(newItem);
   }
 );
 
 router.put(
   "/:id",
-  decodeToken,
-  checkItemPermission,
-  (req: Request<{ id: string }, {}, UpdateItemRequest>, res: Response) => {
-    const itemId = parseInt(req.params.id);
-    const item = itemTable.getItem(itemId);
-    if (!item) return res.status(404).json({ message: "Item not found" });
+  async (
+    req: Request<{ id: string }, {}, UpdateItemRequest>,
+    res: Response
+  ) => {
+    try {
+      const itemId = parseInt(req.params.id);
+      const { notes: noteTexts, labels: labelIds, ...itemData } = req.body;
 
-    const updatedItem = {
-      ...item,
-      ...req.body,
-      id: itemId,
-    };
-    itemTable.updateItem(updatedItem);
+      // Verify item belongs to user
+      const existingItem = await prisma.item.findUnique({
+        where: {
+          id: itemId,
+          userId: (req as any).user.id,
+        },
+      });
 
-    if (req.body.labels) {
-      updateLabelTable(
-        itemId,
-        labelTable
-          .getAllLabels()
-          .filter((label: Label) =>
-            itemLabelRelationTable
-              .getAllRelations()
-              .find(
-                (relation) =>
-                  relation.itemId === itemId && relation.labelId === label.id
-              )
-          ),
-        req.body.labels
-      );
+      if (!existingItem) {
+        return res.status(404).json({ message: "Item not found" });
+      }
+
+      // Delete existing notes
+      await prisma.note.deleteMany({
+        where: { itemId },
+      });
+
+      const item = await prisma.item.update({
+        where: { id: itemId },
+        data: {
+          ...itemData,
+          expiryDate: new Date(itemData.expiryDate),
+          notes: {
+            create: noteTexts.map((note) => ({ note })),
+          },
+          labels: {
+            set: labelIds.map((id) => ({ id: Number(id) })),
+          },
+        },
+        include: {
+          labels: true,
+          notes: true,
+        },
+      });
+
+      res.status(200).json(item);
+    } catch (error) {
+      console.error("Error updating item:", error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2025") {
+          res.status(404).json({ message: "Item not found" });
+          return;
+        }
+      }
+      res.status(500).json({ message: "Error updating item" });
     }
-
-    if (req.body.notes) {
-      updateNoteTable(itemId, req.body.notes);
-    }
-    res.json(updatedItem);
   }
 );
 
-router.delete(
-  "/:id",
-  decodeToken,
-  checkItemPermission,
-  (req: Request<{ id: string }>, res: Response) => {
-    const itemId = parseInt(req.params.id);
-    const item = itemTable.getItem(itemId);
-    if (!item) return res.status(404).json({ message: "Item not found" });
+router.delete("/:id", async (req: Request<{ id: string }>, res: Response) => {
+  try {
+    // Verify item belongs to user
+    const item = await prisma.item.findUnique({
+      where: {
+        id: parseInt(req.params.id),
+        userId: (req as any).user.id,
+      },
+    });
 
-    itemTable.removeItem(itemId);
-    res.json(item);
-  }
-);
-
-function updateLabelTable(
-  itemId: number,
-  previousLabels: Label[],
-  currentLabels: Label[]
-): void {
-  for (const label of currentLabels) {
-    const existingLabel = previousLabels.find((l) => l.name === label.name);
-    if (!existingLabel) {
-      const res = labelTable.addLabel(label);
-      itemLabelRelationTable.addRelation(itemId, res.id);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
     }
-  }
 
-  for (const label of previousLabels) {
-    if (!currentLabels.find((l) => l.name === label.name)) {
-      itemLabelRelationTable.removeRelation(itemId, label.id);
+    await prisma.item.delete({
+      where: { id: item.id },
+    });
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        res.status(404).json({ message: "Item not found" });
+        return;
+      }
     }
+    res.status(500).json({ message: "Error deleting item" });
   }
-}
-
-function updateNoteTable(itemId: number, currentNotes: string[]): void {
-  const allNotes: Note[] = noteTable.getItemNotes(itemId);
-  const notesToRemove = allNotes.filter(
-    (note) => !currentNotes.find((n) => n === note.note)
-  );
-
-  for (const note of currentNotes) {
-    const existingNote = noteTable.getRecordByNote(note);
-    if (!existingNote) {
-      noteTable.addNote(itemId, note);
-    }
-  }
-
-  for (const note of notesToRemove) {
-    const noteRecord = noteTable.getRecordByNote(note.note);
-    if (noteRecord) {
-      noteTable.removeNote(noteRecord.id);
-    }
-  }
-}
+});
 
 export default router;

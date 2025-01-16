@@ -8,27 +8,32 @@ async function main() {
       {
         displayName: "John Doe",
         email: "john@doe.com",
-        password: "password",
+        password:
+          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
       },
       {
         displayName: "Jane Doe",
         email: "jane@doe.com",
-        password: "password",
+        password:
+          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
       },
       {
         displayName: "Jim Doe",
         email: "jim@doe.com",
-        password: "password",
+        password:
+          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
       },
       {
         displayName: "Jill Doe",
         email: "jill@doe.com",
-        password: "password",
+        password:
+          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
       },
       {
         displayName: "Jack Doe",
         email: "jack@doe.com",
-        password: "password",
+        password:
+          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
       },
     ],
   });

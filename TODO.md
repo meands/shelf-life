@@ -2,14 +2,17 @@ expiry date tracker
 
 ## TODO
 
-- [ ] labels need fixing - comparison of labels when updating item
+- [ ] create item with labels bug
+- [ ] availableModals typing error
+- [ ] expose enriched data types (mainly for client)
 - [ ] access control based on user role
+
   - [x] add user id to item records and test on /items/:id
   - [ ] admin can do everything
   - [x] user can only operate on their own items
-- [ ] DB setup
-- [ ] Password hashing
 
+- [x] DB setup
+- [x] Password hashing
 - [x] user api
 - [x] share types
 - [x] write server in ts

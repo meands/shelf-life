@@ -14,8 +14,7 @@ import { useDeleteItem, useItems, useUpdateItem } from "@api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
 import styles from "./styles.module.css";
-import { Item } from "@shared/types";
-import { Label } from "@shared/types";
+import { Item, Label, Note } from "@prisma/client";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
@@ -65,15 +64,16 @@ function LabelSwatch({ label }: { label: Label }) {
   );
 }
 
-function ItemRow({ item }: { item: Item }) {
+// TODO: typing here - has notes
+function ItemRow({ item }: { item: Item & { notes: Note[] } }) {
   const [quantity, setQuantity] = useState(item.quantity);
   const { mutate: updateItem } = useUpdateItem();
 
-  const handleQuantityChange = useDebouncedCallback((value: number) => {
+  const handleQuantityChange = useDebouncedCallback((value) => {
     updateItem({
       ...item,
       quantity: value,
-      notes: item.notes.map((note) => note.note),
+      notes: item.map((note) => note.note),
     });
   }, 1000);
 

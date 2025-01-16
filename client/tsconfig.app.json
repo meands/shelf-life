@@ -9,6 +9,7 @@
     "baseUrl": ".",
     "paths": {
       "@shared/*": ["../shared/*"],
+      "@prisma/client": ["../server/node_modules/.prisma/client"],
       "@api/*": ["./src/api/*"],
       "@routes/*": ["./src/routes/*"],
       "@components/*": ["./src/components/*"]
