@@ -9,7 +9,6 @@ export function signIn(req: Request, res: Response): void {
   const { email, password } = req.body as SignInRequest;
   const users = userTable.getAllUsers();
 
-  console.log(users);
   const user = users.find(
     (user) => user.email === email && user.password === password
   );

@@ -9,21 +9,17 @@ import itemRouter from "@api/item/itemApi";
 import labelRouter from "@api/label/labelApi";
 import noteRouter from "@api/note/noteApi";
 import userRouter from "@api/user/userApi";
-import { authenticateUser } from "@api/auth/itemMiddleware";
+import { authenticateUser } from "@middleware/itemMiddleware";
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (_req, res) => {
-  res.send("Hello World");
-});
-
 app.post("/signIn", signIn);
 app.get("/welcome", welcome);
+app.use(authenticateUser);
 
-itemRouter.use(authenticateUser);
 app.use("/items", itemRouter);
 app.use("/labels", labelRouter);
 app.use("/notes", noteRouter);

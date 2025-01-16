@@ -6,11 +6,11 @@ import {
   labelTable,
   noteTable,
 } from "@data/mockData";
-import { checkPermission } from "@api/auth/itemMiddleware";
+import { checkItemPermission } from "@middleware/itemMiddleware";
 
 const router = express.Router();
 
-router.get("/", (_req: Request, res: Response) => {
+router.get("/", checkItemPermission, (_req: Request, res: Response) => {
   res.status(200).json(
     itemTable.getAllItems().map((item) => ({
       ...item,
@@ -31,7 +31,7 @@ router.get("/", (_req: Request, res: Response) => {
 
 router.get(
   "/:id",
-  checkPermission,
+  checkItemPermission,
   (req: Request<{ id: string }>, res: Response) => {
     const item = itemTable.getItem(parseInt(req.params.id));
     if (!item) return res.status(404).json({ message: "Item not found" });
@@ -85,6 +85,7 @@ router.post("/", (req: Request<{}, {}, CreateItemRequest>, res: Response) => {
 
 router.put(
   "/:id",
+  checkItemPermission,
   (req: Request<{ id: string }, {}, UpdateItemRequest>, res: Response) => {
     const itemId = parseInt(req.params.id);
     const item = itemTable.getItem(itemId);
@@ -121,14 +122,18 @@ router.put(
   }
 );
 
-router.delete("/:id", (req: Request<{ id: string }>, res: Response) => {
-  const itemId = parseInt(req.params.id);
-  const item = itemTable.getItem(itemId);
-  if (!item) return res.status(404).json({ message: "Item not found" });
+router.delete(
+  "/:id",
+  checkItemPermission,
+  (req: Request<{ id: string }>, res: Response) => {
+    const itemId = parseInt(req.params.id);
+    const item = itemTable.getItem(itemId);
+    if (!item) return res.status(404).json({ message: "Item not found" });
 
-  itemTable.removeItem(itemId);
-  res.json(item);
-});
+    itemTable.removeItem(itemId);
+    res.json(item);
+  }
+);
 
 function updateLabelTable(
   itemId: number,

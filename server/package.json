@@ -27,6 +27,7 @@
   },
   "_moduleAliases": {
     "@api": "api",
+    "@middleware": "middleware",
     "@data": "data",
     "@types": "types"
   }
