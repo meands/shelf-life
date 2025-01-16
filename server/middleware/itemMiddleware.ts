@@ -23,47 +23,46 @@ export function authenticateUser(
   } else next();
 }
 
+export function decodeToken(req: Request, res: Response, next: NextFunction) {
+  const token = req.headers.authorization?.split(" ")?.[1];
+  if (!token) {
+    res.status(401).json({ error: "No token provided" });
+  } else {
+    try {
+      const decoded = jwt.verify(token, jwtKey);
+      (req as any).user = decoded;
+      next();
+    } catch (error) {
+      res.status(401).json({ error: "Invalid token" });
+    }
+  }
+}
+
 // check if user has permission to read/update/delete item & item belongs to user
 export function checkItemPermission(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const token = req.headers.authorization?.split(" ")?.[1];
+  const { id, role } = (req as any).user;
 
-  if (!token) {
-    res.status(401).json({ error: "No token provided" });
-    return;
-  }
+  const permisions = roles.find((r) => r.role === role)?.permissions;
 
-  try {
-    const decoded = jwt.verify(token, jwtKey);
+  const action =
+    methodToPermission[req.method as keyof typeof methodToPermission];
 
-    const { id, role } = decoded as {
-      id: number;
-      role: string;
-    };
-
-    const permisions = roles.find((r) => r.role === role)?.permissions;
-
-    const action =
-      methodToPermission[req.method as keyof typeof methodToPermission];
-
-    if (!permisions?.includes(action)) {
-      res
-        .status(403)
-        .json({ error: `User does not have permission to ${action}` });
-    } else if (
-      req.params.id &&
-      !userTable
-        .getUserItems(id)
-        .find((item) => item.id === parseInt(req.params.id))
-    ) {
-      res.status(403).json({ error: "Item does not belong to user" });
-    } else {
-      next();
-    }
-  } catch (error) {
-    res.status(401).json({ error: "Invalid token" });
+  if (!permisions?.includes(action)) {
+    res
+      .status(403)
+      .json({ error: `User does not have permission to ${action}` });
+  } else if (
+    req.params.id &&
+    !userTable
+      .getUserItems(id)
+      ?.find((item) => item.id === parseInt(req.params.id))
+  ) {
+    res.status(403).json({ error: "Item does not belong to user" });
+  } else {
+    next();
   }
 }

@@ -82,6 +82,21 @@ export interface User {
   role: string;
 }
 
+export interface CreateUserRequest {
+  displayName: string;
+  email: string;
+  password: string;
+  role?: string;
+}
+
+export interface UpdateUserRequest {
+  id: number;
+  displayName?: string;
+  email?: string;
+  password?: string;
+  role?: string;
+}
+
 // API Responses
 export interface ApiResponse<T> {
   data: T;

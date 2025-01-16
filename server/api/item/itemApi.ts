@@ -5,32 +5,39 @@ import {
   itemTable,
   labelTable,
   noteTable,
+  userTable,
 } from "@data/mockData";
-import { checkItemPermission } from "@middleware/itemMiddleware";
+import { checkItemPermission, decodeToken } from "@middleware/itemMiddleware";
 
 const router = express.Router();
 
-router.get("/", checkItemPermission, (_req: Request, res: Response) => {
-  res.status(200).json(
-    itemTable.getAllItems().map((item) => ({
-      ...item,
-      labels: labelTable
-        .getAllLabels()
-        .filter((label: Label) =>
-          itemLabelRelationTable
-            .getAllRelations()
-            .find(
-              (relation) =>
-                relation.itemId === item.id && relation.labelId === label.id
-            )
-        ),
-      notes: noteTable.getItemNotes(item.id),
-    }))
-  );
-});
+router.get(
+  "/",
+  decodeToken,
+  checkItemPermission,
+  (_req: Request, res: Response) => {
+    res.status(200).json(
+      (userTable.getUserItems((_req as any).user.id) || [])?.map((item) => ({
+        ...item,
+        labels: labelTable
+          .getAllLabels()
+          .filter((label: Label) =>
+            itemLabelRelationTable
+              .getAllRelations()
+              .find(
+                (relation) =>
+                  relation.itemId === item.id && relation.labelId === label.id
+              )
+          ),
+        notes: noteTable.getItemNotes(item.id),
+      }))
+    );
+  }
+);
 
 router.get(
   "/:id",
+  decodeToken,
   checkItemPermission,
   (req: Request<{ id: string }>, res: Response) => {
     const item = itemTable.getItem(parseInt(req.params.id));
@@ -53,38 +60,46 @@ router.get(
   }
 );
 
-router.post("/", (req: Request<{}, {}, CreateItemRequest>, res: Response) => {
-  const newItem = {
-    id: itemTable.getNextId(),
-    ...req.body,
-  };
-  itemTable.addItem(newItem);
+router.post(
+  "/",
+  decodeToken,
+  checkItemPermission,
+  (req: Request<{}, {}, CreateItemRequest>, res: Response) => {
+    const newItem = {
+      id: itemTable.getNextId(),
+      ...req.body,
+    };
+    itemTable.addItem(newItem);
+    userTable.addUserItemRelation(newItem.id, (req as any).user.id);
 
-  if (req.body.labels) {
-    updateLabelTable(
-      newItem.id,
-      labelTable
-        .getAllLabels()
-        .filter((label: Label) =>
-          itemLabelRelationTable
-            .getAllRelations()
-            .find(
-              (relation) =>
-                relation.itemId === newItem.id && relation.labelId === label.id
-            )
-        ),
-      req.body.labels
-    );
-  }
+    if (req.body.labels) {
+      updateLabelTable(
+        newItem.id,
+        labelTable
+          .getAllLabels()
+          .filter((label: Label) =>
+            itemLabelRelationTable
+              .getAllRelations()
+              .find(
+                (relation) =>
+                  relation.itemId === newItem.id &&
+                  relation.labelId === label.id
+              )
+          ),
+        req.body.labels
+      );
+    }
 
-  if (req.body.notes) {
-    updateNoteTable(newItem.id, req.body.notes);
+    if (req.body.notes) {
+      updateNoteTable(newItem.id, req.body.notes);
+    }
+    res.status(201).json(newItem);
   }
-  res.status(201).json(newItem);
-});
+);
 
 router.put(
   "/:id",
+  decodeToken,
   checkItemPermission,
   (req: Request<{ id: string }, {}, UpdateItemRequest>, res: Response) => {
     const itemId = parseInt(req.params.id);
@@ -124,6 +139,7 @@ router.put(
 
 router.delete(
   "/:id",
+  decodeToken,
   checkItemPermission,
   (req: Request<{ id: string }>, res: Response) => {
     const itemId = parseInt(req.params.id);

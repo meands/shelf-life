@@ -1,4 +1,5 @@
 import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Home } from "./routes/Home/Home";
@@ -7,8 +8,19 @@ import { Login } from "./components/Login/Login";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import { Items } from "./routes/Home/Items/Items";
 import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
 import { Labels } from "./routes/Home/Labels/Labels";
 import { globalModals } from "./modals/availableModals";
+import axios from "axios";
+
+export const axiosInstance = axios.create({
+  baseURL: "http://localhost:3000",
+});
+
+axiosInstance.interceptors.request.use((config) => {
+  config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+  return config;
+});
 
 const queryClient = new QueryClient();
 
@@ -17,6 +29,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <MantineProvider>
+          <Notifications />
           <ModalsProvider modals={globalModals}>
             <AppRoutes />
           </ModalsProvider>

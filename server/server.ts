@@ -18,12 +18,13 @@ app.use(cors());
 
 app.post("/signIn", signIn);
 app.get("/welcome", welcome);
+app.use("/users", userRouter);
+
 app.use(authenticateUser);
 
 app.use("/items", itemRouter);
 app.use("/labels", labelRouter);
 app.use("/notes", noteRouter);
-app.use("/users", userRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

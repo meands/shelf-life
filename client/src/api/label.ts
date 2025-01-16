@@ -1,13 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { Label } from "@shared/types";
-
-export const API_URL = "http://localhost:3000/labels";
+import { axiosInstance } from "../App";
 
 export function useGetLabels() {
   return useQuery({
     queryKey: ["labels"],
-    queryFn: () => axios.get(API_URL).then((res) => res.data as Label[]),
+    queryFn: () =>
+      axiosInstance.get("/labels").then((res) => res.data as Label[]),
   });
 }
 
@@ -16,7 +15,7 @@ export function useCreateLabel() {
 
   return useMutation({
     mutationFn: async (label: Omit<Label, "id">) =>
-      axios.post(API_URL, label).then((res) => res.data),
+      axiosInstance.post("/labels", label).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["labels"] });
     },
@@ -28,7 +27,7 @@ export function useUpdateLabel() {
 
   return useMutation({
     mutationFn: async (label: Label) =>
-      axios.put(`${API_URL}/${label.id}`, label).then((res) => res.data),
+      axiosInstance.put(`/labels/${label.id}`, label).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["labels"] });
     },
@@ -40,7 +39,7 @@ export function useDeleteLabel() {
 
   return useMutation({
     mutationFn: async (labelId: number) =>
-      axios.delete(`${API_URL}/${labelId}`).then((res) => res.data),
+      axiosInstance.delete(`/labels/${labelId}`).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["labels"] });
     },
