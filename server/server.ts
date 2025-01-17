@@ -9,7 +9,7 @@ import itemRouter from "@api/item/itemApi";
 import labelRouter from "@api/label/labelApi";
 import noteRouter from "@api/note/noteApi";
 import userRouter from "@api/user/userApi";
-import { authenticateUser } from "@middleware/itemMiddleware";
+import { authenticateUser } from "@middleware/auth";
 
 const app = express();
 

@@ -139,25 +139,59 @@ async function main() {
     ],
   });
 
-  await prisma.label.createMany({
-    data: [
-      {
-        name: "Fruit",
-        colour: "#FF7F00",
+  await prisma.label.create({
+    data: {
+      name: "Fruit",
+      colour: "#FF7F00",
+      description:
+        "Fruit is a sweet, fleshy, edible fruit that is the result of a plant's flowering process.",
+      items: {
+        connect: {
+          id: 1,
+        },
       },
-      {
-        name: "Vegetable",
-        colour: "#00FF00",
+    },
+  });
+
+  await prisma.label.create({
+    data: {
+      name: "Vegetable",
+      colour: "#00FF00",
+      description:
+        "Vegetables are parts of plants that are consumed by humans or other animals as food.",
+      items: {
+        connect: {
+          id: 1,
+        },
       },
-      {
-        name: "Meat",
-        colour: "#FF0000",
+    },
+  });
+
+  await prisma.label.create({
+    data: {
+      name: "Meat",
+      colour: "#FF0000",
+      description: "Meat is the flesh of animals that are consumed as food.",
+      items: {
+        connect: {
+          id: 1,
+        },
       },
-      {
-        name: "Dairy",
-        colour: "#0000FF",
+    },
+  });
+
+  await prisma.label.create({
+    data: {
+      name: "Dairy",
+      colour: "#0000FF",
+      description:
+        "Dairy products are foods derived from the milk of mammals, primarily cows, goats, and sheep.",
+      items: {
+        connect: {
+          id: 1,
+        },
       },
-    ],
+    },
   });
 }
 

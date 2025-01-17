@@ -1,6 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { SignInRequest, SignInResponse, WelcomeResponse } from "@shared/types";
+import { SignInRequest, SignInResponse } from "@shared/types";
 import { axiosInstance } from "../App";
+import { User } from "@prisma/client";
+
+interface VerifyResponse {
+  user: User;
+  message: string;
+}
 
 export const useSignIn = () => {
   return useMutation<SignInResponse, Error, SignInRequest>({
@@ -11,12 +17,14 @@ export const useSignIn = () => {
   });
 };
 
-export const useWelcome = () => {
-  return useQuery<WelcomeResponse, Error>({
-    queryKey: ["welcome"],
+export const useVerifyToken = () => {
+  return useQuery<VerifyResponse>({
+    queryKey: ["verify"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/welcome");
+      const response = await axiosInstance.get("/users/verify");
       return response.data;
     },
+    retry: false,
+    enabled: !!localStorage.getItem("token"),
   });
 };

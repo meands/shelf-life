@@ -28,8 +28,8 @@ export interface UpdateItemRequest extends CreateItemRequest {
 }
 
 // Labels
-interface Label {
-  id: number;
+export interface Label {
+  id?: number;
   name: string;
   colour: string;
   description?: string;

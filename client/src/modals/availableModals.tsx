@@ -11,7 +11,7 @@ import { useForm } from "@mantine/form";
 import { ContextModalProps } from "@mantine/modals";
 import { useCreateItem, useUpdateItem } from "../api/item";
 import { useCreateLabel, useGetLabels, useUpdateLabel } from "../api/label";
-import { Item, Label } from "@prisma/client";
+import { ItemWithNotesAndLabels, Label } from "@types";
 
 export const globalModals = {
   addItem: AddItem,
@@ -31,7 +31,7 @@ function AddItem({ context, id }: ContextModalProps) {
       quantity: 1,
       expiryDate: "",
       expiryType: "Best before",
-      labels: [] as Label[],
+      labels: [] as { id?: number; name: string; colour: string }[],
       notes: [] as string[],
     },
   });
@@ -65,9 +65,7 @@ function AddItem({ context, id }: ContextModalProps) {
           acceptValueOnBlur={false}
           mt="md"
           value={form.values.labels.map((label) => label.name)}
-          onChange={(values) => {
-            form.setFieldValue("labels", getLabels(form.values.labels, values));
-          }}
+          onChange={(values) => {}}
         />
       )}
 
@@ -89,7 +87,7 @@ function EditItem({
   context,
   id,
   innerProps,
-}: ContextModalProps<{ item: Item }>) {
+}: ContextModalProps<{ item: ItemWithNotesAndLabels }>) {
   const { mutate: updateItem, isPending } = useUpdateItem();
   const { data: labels, isLoading: isLoadingLabels } = useGetLabels();
 
@@ -137,9 +135,7 @@ function EditItem({
           acceptValueOnBlur={false}
           mt="md"
           value={form.values.labels.map((label) => label.name)}
-          onChange={(values) => {
-            form.setFieldValue("labels", getLabels(form.values.labels, values));
-          }}
+          onChange={(values) => {}}
         />
       )}
       <TextInput
@@ -175,7 +171,7 @@ function EditLabel({
   return (
     <form
       onSubmit={form.onSubmit((values) => {
-        updateLabel({ ...innerProps.label, ...values });
+        // updateLabel({ ...innerProps.label, ...values });
         context.closeModal(id);
       })}
     >
@@ -194,30 +190,6 @@ function EditLabel({
       </Button>
     </form>
   );
-}
-
-function getLabels(
-  previousLabelItems: Label[],
-  currentLabels: string[]
-): Label[] {
-  const existingLabelItems = previousLabelItems.filter((label) =>
-    currentLabels.includes(label.name)
-  );
-
-  const newLabelItems = currentLabels
-    .filter(
-      (label) =>
-        !existingLabelItems.find(
-          (existingLabel) => existingLabel.name === label
-        )
-    )
-    .map((label) => ({
-      id: 0,
-      name: label,
-      colour: "#" + Math.floor(Math.random() * 16777215).toString(16),
-    }));
-
-  return [...existingLabelItems, ...newLabelItems];
 }
 
 function AddLabel({ context, id }: ContextModalProps) {

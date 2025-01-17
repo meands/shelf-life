@@ -1,16 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../App";
 import { Item } from "@prisma/client";
+import { CreateItemRequest, ItemWithNotesAndLabels } from "@types";
 
 export const useItems = () => {
-  return useQuery<Item[]>({
+  return useQuery<ItemWithNotesAndLabels[]>({
     queryKey: ["items"],
     queryFn: () => axiosInstance.get("/items").then((res) => res.data),
   });
 };
 
 export const useItem = (id: number) => {
-  return useQuery<Item>({
+  return useQuery<ItemWithNotesAndLabels>({
     queryKey: ["items", id],
     queryFn: () => axiosInstance.get(`/items/${id}`).then((res) => res.data),
   });
@@ -20,7 +21,7 @@ export const useCreateItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (newItem: Omit<Item, "id" | "notes"> & { notes: string[] }) =>
+    mutationFn: (newItem: CreateItemRequest) =>
       axiosInstance.post("/items", newItem).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });

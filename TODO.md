@@ -3,6 +3,7 @@ expiry date tracker
 ## TODO
 
 - [ ] create item with labels bug
+- [ ] improve type export mechanism
 - [ ] availableModals typing error
 - [ ] expose enriched data types (mainly for client)
 - [ ] access control based on user role

@@ -14,6 +14,7 @@ export default defineConfig({
         __dirname,
         "../server/node_modules/.prisma/client/index.d.ts"
       ),
+      "@types": path.resolve(__dirname, "../server/types"),
       // https://github.com/tabler/tabler-icons/issues/1233#issuecomment-2549771202
       "@tabler/icons-react": "@tabler/icons-react/dist/esm/icons/index.mjs",
     },

@@ -4,11 +4,19 @@ import jwt from "jsonwebtoken";
 import prisma from "../../services/db";
 import { hash } from "argon2";
 import { Prisma } from "@prisma/client";
+import { authenticateUser } from "../../middleware/auth";
 
 const jwtKey = process.env.TOKEN_SECRET || "default-secret-key";
 const jwtExpirySeconds = 60000;
 
 const router = express.Router();
+
+router.get("/verify", authenticateUser, async (req: Request, res: Response) => {
+  res.status(200).json({
+    user: (req as any).user,
+    message: "Token is valid",
+  });
+});
 
 router.get("/", async (_req: Request, res: Response) => {
   try {
