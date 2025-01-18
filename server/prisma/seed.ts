@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import * as argon2 from "argon2";
 
 const prisma = new PrismaClient();
 
@@ -8,32 +9,27 @@ async function main() {
       {
         displayName: "John Doe",
         email: "john@doe.com",
-        password:
-          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
+        password: await argon2.hash("johndoe"),
       },
       {
         displayName: "Jane Doe",
         email: "jane@doe.com",
-        password:
-          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
+        password: await argon2.hash("janedoe"),
       },
       {
         displayName: "Jim Doe",
         email: "jim@doe.com",
-        password:
-          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
+        password: await argon2.hash("jimdoe"),
       },
       {
         displayName: "Jill Doe",
         email: "jill@doe.com",
-        password:
-          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
+        password: await argon2.hash("jilldoe"),
       },
       {
         displayName: "Jack Doe",
         email: "jack@doe.com",
-        password:
-          "$argon2id$v=19$m=65536,t=3,p=4$3uBq/uK9JpWEh1AgYUvLoA$Y8WeX1WH0Nxdw7A/fTSYhcBy+tQV0J7hOMAalwFwXIs",
+        password: await argon2.hash("jackdoe"),
       },
     ],
   });
@@ -150,6 +146,7 @@ async function main() {
           id: 1,
         },
       },
+      userId: 1,
     },
   });
 
@@ -164,6 +161,7 @@ async function main() {
           id: 1,
         },
       },
+      userId: 1,
     },
   });
 
@@ -177,6 +175,7 @@ async function main() {
           id: 1,
         },
       },
+      userId: 1,
     },
   });
 
@@ -191,6 +190,28 @@ async function main() {
           id: 1,
         },
       },
+      userId: 1,
+    },
+  });
+
+  await prisma.note.create({
+    data: {
+      note: "This is a note",
+      itemId: 1,
+    },
+  });
+
+  await prisma.note.create({
+    data: {
+      note: "This is note 2",
+      itemId: 2,
+    },
+  });
+
+  await prisma.note.create({
+    data: {
+      note: "This is note 3",
+      itemId: 1,
     },
   });
 }

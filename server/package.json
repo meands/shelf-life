@@ -5,7 +5,8 @@
   "scripts": {
     "start": "nodemon server.ts",
     "build": "tsc",
-    "reset": "prisma migrate reset --force"
+    "reset": "prisma migrate reset --force",
+    "clean-start": "npm run reset && npm run start"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

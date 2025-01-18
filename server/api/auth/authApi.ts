@@ -5,7 +5,7 @@ import prisma from "../../services/db";
 import * as argon2 from "argon2";
 const jwtKey = process.env.TOKEN_SECRET || "default-secret-key";
 
-export async function signIn(req: Request, res: Response): Promise<void> {
+export async function signIn(req: Request, res: Response) {
   const { email, password } = req.body as SignInRequest;
 
   const user = await prisma.user.findUnique({

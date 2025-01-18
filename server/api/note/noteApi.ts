@@ -7,39 +7,24 @@ const router = express.Router();
 
 router.use(authenticateUser);
 
-router.get("/", async (_req: Request, res: Response) => {
-  try {
-    const notes = await prisma.note.findMany({
-      include: {
-        item: true,
-      },
-    });
-    res.status(200).json(notes);
-  } catch (error) {
-    console.error("Error fetching notes:", error);
-    res.status(500).json({ message: "Error fetching notes" });
+// get item notes
+router.get(
+  "/:itemId",
+  async (req: Request<{ itemId: string }>, res: Response) => {
+    try {
+      const notes = await prisma.note.findMany({
+        where: { itemId: parseInt(req.params.itemId) },
+      });
+      res.status(200).json(notes);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+      res.status(500).json({ message: "Error fetching notes" });
+    }
   }
-});
-
-router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
-  try {
-    const note = await prisma.note.findUnique({
-      where: { id: parseInt(req.params.id) },
-      include: {
-        item: true,
-      },
-    });
-    if (!note) return res.status(404).json({ message: "Note not found" });
-    res.status(200).json(note);
-  } catch (error) {
-    console.error("Error fetching note:", error);
-    res.status(500).json({ message: "Error fetching note" });
-  }
-});
+);
 
 router.post("/", async (req: Request, res: Response) => {
   try {
-    // Verify user has access to the item
     const item = await prisma.item.findUnique({
       where: {
         id: req.body.itemId,
@@ -48,7 +33,7 @@ router.post("/", async (req: Request, res: Response) => {
     });
 
     if (!item) {
-      return res.status(404).json({ message: "Item not found" });
+      return res.status(404).json({ message: "Item not found for this user" });
     }
 
     const note = await prisma.note.create({

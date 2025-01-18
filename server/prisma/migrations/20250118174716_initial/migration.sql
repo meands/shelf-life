@@ -28,6 +28,7 @@ CREATE TABLE "Label" (
     "name" TEXT NOT NULL,
     "colour" TEXT NOT NULL,
     "description" TEXT,
+    "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Label_pkey" PRIMARY KEY ("id")
 );
@@ -59,7 +60,10 @@ CREATE INDEX "_ItemToLabel_B_index" ON "_ItemToLabel"("B");
 ALTER TABLE "Item" ADD CONSTRAINT "Item_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Note" ADD CONSTRAINT "Note_itemId_fkey" FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Label" ADD CONSTRAINT "Label_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Note" ADD CONSTRAINT "Note_itemId_fkey" FOREIGN KEY ("itemId") REFERENCES "Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ItemToLabel" ADD CONSTRAINT "_ItemToLabel_A_fkey" FOREIGN KEY ("A") REFERENCES "Item"("id") ON DELETE CASCADE ON UPDATE CASCADE;

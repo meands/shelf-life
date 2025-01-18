@@ -39,11 +39,10 @@ export interface CreateLabelRequest {
   name: string;
   colour: string;
   description?: string;
+  itemIds?: number[];
 }
 
-export interface UpdateLabelRequest extends CreateLabelRequest {
-  id: number;
-}
+export interface UpdateLabelRequest extends CreateLabelRequest {}
 
 export interface CreateNoteRequest {
   itemId: number;

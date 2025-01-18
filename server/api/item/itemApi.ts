@@ -4,10 +4,10 @@ import { Prisma } from "@prisma/client";
 import { authenticateUser } from "../../middleware/auth";
 import { UpdateItemRequest } from "@shared/types";
 import { CreateItemRequest } from "@shared/types";
+import { Decimal } from "@prisma/client/runtime/library";
 
 const router = express.Router();
 
-// Apply authentication middleware to all routes
 router.use(authenticateUser);
 
 router.get("/", async (req: Request, res: Response) => {
@@ -40,7 +40,8 @@ router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
         notes: true,
       },
     });
-    if (!item) return res.status(404).json({ message: "Item not found" });
+    if (!item)
+      return res.status(404).json({ message: "Item not found for this user" });
     res.status(200).json(item);
   } catch (error) {
     console.error("Error fetching item:", error);
@@ -52,18 +53,27 @@ router.post(
   "/",
   async (req: Request<{}, {}, CreateItemRequest>, res: Response) => {
     try {
-      const { notes: noteTexts, labels, ...itemData } = req.body;
+      const { notes, labels, ...itemData } = req.body;
 
       const item = await prisma.item.create({
         data: {
           ...itemData,
+          quantity: new Decimal(itemData.quantity),
           expiryDate: new Date(itemData.expiryDate),
           userId: (req as any).user.id,
           notes: {
-            create: noteTexts.map((note) => ({ note })),
+            create: notes.map((note) => ({ note })),
           },
           labels: {
-            connect: labels.map((label) => ({ id: label.id })),
+            connectOrCreate: labels.map((label) => ({
+              create: {
+                name: label.name,
+                colour: label.colour,
+                description: label.description,
+                userId: (req as any).user.id,
+              },
+              where: { id: label.id || 0 },
+            })),
           },
         },
         include: {
@@ -94,9 +104,8 @@ router.put(
   ) => {
     try {
       const itemId = parseInt(req.params.id);
-      const { notes: noteTexts, labels: labelIds, ...itemData } = req.body;
+      const { notes, labels, ...itemData } = req.body;
 
-      // Verify item belongs to user
       const existingItem = await prisma.item.findUnique({
         where: {
           id: itemId,
@@ -108,7 +117,6 @@ router.put(
         return res.status(404).json({ message: "Item not found" });
       }
 
-      // Delete existing notes
       await prisma.note.deleteMany({
         where: { itemId },
       });
@@ -119,10 +127,18 @@ router.put(
           ...itemData,
           expiryDate: new Date(itemData.expiryDate),
           notes: {
-            create: noteTexts.map((note) => ({ note })),
+            create: notes.map((note) => ({ note })),
           },
           labels: {
-            set: labelIds.map((id) => ({ id: Number(id) })),
+            connectOrCreate: labels.map((label) => ({
+              create: {
+                name: label.name,
+                colour: label.colour,
+                description: label.description,
+                userId: (req as any).user.id,
+              },
+              where: { id: label.id || 0 },
+            })),
           },
         },
         include: {
@@ -147,7 +163,6 @@ router.put(
 
 router.delete("/:id", async (req: Request<{ id: string }>, res: Response) => {
   try {
-    // Verify item belongs to user
     const item = await prisma.item.findUnique({
       where: {
         id: parseInt(req.params.id),
@@ -156,21 +171,15 @@ router.delete("/:id", async (req: Request<{ id: string }>, res: Response) => {
     });
 
     if (!item) {
-      return res.status(404).json({ message: "Item not found" });
+      return res.status(404).json({ message: "Item not found for this user" });
     }
 
     await prisma.item.delete({
       where: { id: item.id },
     });
-    res.status(204).send();
+    res.status(200).send(item);
   } catch (error) {
     console.error("Error deleting item:", error);
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") {
-        res.status(404).json({ message: "Item not found" });
-        return;
-      }
-    }
     res.status(500).json({ message: "Error deleting item" });
   }
 });
