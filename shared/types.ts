@@ -13,6 +13,11 @@ export interface WelcomeResponse {
   message: string;
 }
 
+export interface Note {
+  id?: number;
+  note: string;
+}
+
 export interface CreateItemRequest {
   name: string;
   quantity: number;
@@ -20,7 +25,7 @@ export interface CreateItemRequest {
   expiryDate: string;
   expiryType: string;
   labels: Label[];
-  notes: string[];
+  notes: Note[];
 }
 
 export interface UpdateItemRequest extends CreateItemRequest {

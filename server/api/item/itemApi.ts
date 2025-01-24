@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { authenticateUser } from "../../middleware/auth";
 import { UpdateItemRequest } from "@shared/types";
 import { CreateItemRequest } from "@shared/types";
+import { Note } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 
 const router = express.Router();
@@ -111,15 +112,31 @@ router.put(
           id: itemId,
           userId: (req as any).user.id,
         },
+        include: {
+          notes: true,
+        },
       });
 
       if (!existingItem) {
         return res.status(404).json({ message: "Item not found" });
       }
 
-      await prisma.note.deleteMany({
-        where: { itemId },
-      });
+      // Handle notes updates
+      const existingNoteIds = existingItem.notes.map((n) => n.id);
+      const updatedNoteIds = notes.filter((n) => n.id).map((n) => n.id);
+
+      const notesToDelete = existingNoteIds.filter(
+        (id) => !updatedNoteIds.includes(id)
+      );
+      const notesToCreate = notes
+        .filter((n) => !n.id)
+        .map((n) => ({ note: n.note }));
+      const notesToUpdate = notes
+        .filter((n) => n.id)
+        .map((n) => ({
+          where: { id: n.id },
+          data: { note: n.note },
+        }));
 
       const item = await prisma.item.update({
         where: { id: itemId },
@@ -127,7 +144,9 @@ router.put(
           ...itemData,
           expiryDate: new Date(itemData.expiryDate),
           notes: {
-            create: notes.map((note) => ({ note })),
+            deleteMany: { id: { in: notesToDelete } },
+            create: notesToCreate,
+            update: notesToUpdate,
           },
           labels: {
             connectOrCreate: labels.map((label) => ({

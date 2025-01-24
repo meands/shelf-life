@@ -4,225 +4,323 @@ import {
   Group,
   NumberInput,
   Select,
-  TagsInput,
+  Stack,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { ContextModalProps } from "@mantine/modals";
-import { useCreateItem, useUpdateItem } from "../api/item";
-import { useCreateLabel, useGetLabels, useUpdateLabel } from "../api/label";
-import { ItemWithNotesAndLabels, Label } from "@types";
+import { notifications } from "@mantine/notifications";
+import { useCreateItem, useUpdateItem } from "@api/item";
+import { useCreateLabel, useUpdateLabel } from "@api/label";
+import { Label, Note } from "@shared/types";
+import { NoteFields } from "@components/NoteFields/NoteFields";
+
+interface CreateItemModalProps {
+  onClose: () => void;
+}
+
+interface UpdateItemModalProps {
+  onClose: () => void;
+  innerProps: {
+    item: {
+      id: number;
+      name: string;
+      quantity: number;
+      unit: string;
+      expiryDate: string;
+      expiryType: string;
+      labels: Label[];
+      notes: Note[];
+    };
+  };
+}
+
+interface CreateLabelModalProps {
+  onClose: () => void;
+}
+
+interface UpdateLabelModalProps {
+  onClose: () => void;
+  innerProps: {
+    label: Label;
+  };
+}
 
 export const globalModals = {
-  addItem: AddItem,
-  editItem: EditItem,
-  addLabel: AddLabel,
-  editLabel: EditLabel,
+  createItem: ({ onClose }: CreateItemModalProps) => {
+    const { mutate: createItem, isPending } = useCreateItem();
+
+    const form = useForm({
+      initialValues: {
+        name: "",
+        quantity: 1,
+        unit: "",
+        expiryDate: "",
+        expiryType: "Best before",
+        labels: [],
+        notes: [{ note: "" }],
+      },
+    });
+
+    const handleSubmit = form.onSubmit((values) => {
+      createItem(values, {
+        onSuccess: () => {
+          notifications.show({
+            title: "Success",
+            message: "Item created successfully",
+            color: "green",
+          });
+          onClose();
+        },
+        onError: (error) => {
+          notifications.show({
+            title: "Error",
+            message: error.message,
+            color: "red",
+          });
+        },
+      });
+    });
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <Stack>
+          <TextInput
+            label="Name"
+            placeholder="Enter item name"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
+          <Group grow>
+            <NumberInput
+              label="Quantity"
+              placeholder="Enter quantity"
+              withAsterisk
+              {...form.getInputProps("quantity")}
+            />
+            <TextInput
+              label="Unit"
+              placeholder="Enter unit"
+              withAsterisk
+              {...form.getInputProps("unit")}
+            />
+          </Group>
+          <TextInput
+            label="Expiry Date"
+            type="date"
+            withAsterisk
+            {...form.getInputProps("expiryDate")}
+          />
+          <Select
+            label="Expiry Type"
+            data={["Best before", "Use by"]}
+            {...form.getInputProps("expiryType")}
+          />
+          <NoteFields form={form} />
+          <Button type="submit" loading={isPending} mt="md">
+            Create Item
+          </Button>
+        </Stack>
+      </form>
+    );
+  },
+
+  updateItem: ({ onClose, innerProps }: UpdateItemModalProps) => {
+    const { mutate: updateItem, isPending } = useUpdateItem();
+
+    const form = useForm({
+      initialValues: {
+        id: innerProps.item.id,
+        name: innerProps.item.name,
+        quantity: innerProps.item.quantity,
+        unit: innerProps.item.unit,
+        expiryDate: innerProps.item.expiryDate,
+        expiryType: innerProps.item.expiryType,
+        labels: innerProps.item.labels,
+        notes: innerProps.item.notes.length
+          ? innerProps.item.notes
+          : [{ note: "" }],
+      },
+    });
+
+    const handleSubmit = form.onSubmit((values) => {
+      updateItem(values, {
+        onSuccess: () => {
+          notifications.show({
+            title: "Success",
+            message: "Item updated successfully",
+            color: "green",
+          });
+          onClose();
+        },
+        onError: (error) => {
+          notifications.show({
+            title: "Error",
+            message: error.message,
+            color: "red",
+          });
+        },
+      });
+    });
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <Stack>
+          <TextInput
+            label="Name"
+            placeholder="Enter item name"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
+          <Group grow>
+            <NumberInput
+              label="Quantity"
+              placeholder="Enter quantity"
+              withAsterisk
+              {...form.getInputProps("quantity")}
+            />
+            <TextInput
+              label="Unit"
+              placeholder="Enter unit"
+              withAsterisk
+              {...form.getInputProps("unit")}
+            />
+          </Group>
+          <TextInput
+            label="Expiry Date"
+            type="date"
+            withAsterisk
+            {...form.getInputProps("expiryDate")}
+          />
+          <Select
+            label="Expiry Type"
+            data={["Best before", "Use by"]}
+            {...form.getInputProps("expiryType")}
+          />
+          <NoteFields form={form} />
+          <Button type="submit" loading={isPending} mt="md">
+            Update Item
+          </Button>
+        </Stack>
+      </form>
+    );
+  },
+
+  createLabel: ({ onClose }: CreateLabelModalProps) => {
+    const { mutate: createLabel, isPending } = useCreateLabel();
+
+    const form = useForm({
+      initialValues: {
+        name: "",
+        colour: "#000000",
+        description: "",
+      },
+    });
+
+    const handleSubmit = form.onSubmit((values) => {
+      createLabel(values, {
+        onSuccess: () => {
+          notifications.show({
+            title: "Success",
+            message: "Label created successfully",
+            color: "green",
+          });
+          onClose();
+        },
+        onError: (error) => {
+          notifications.show({
+            title: "Error",
+            message: error.message,
+            color: "red",
+          });
+        },
+      });
+    });
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <Stack>
+          <TextInput
+            label="Name"
+            placeholder="Enter label name"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
+          <ColorInput
+            label="Colour"
+            placeholder="Pick a colour"
+            withAsterisk
+            {...form.getInputProps("colour")}
+          />
+          <TextInput
+            label="Description"
+            placeholder="Enter description"
+            {...form.getInputProps("description")}
+          />
+          <Button type="submit" loading={isPending} mt="md">
+            Create Label
+          </Button>
+        </Stack>
+      </form>
+    );
+  },
+
+  updateLabel: ({ onClose, innerProps }: UpdateLabelModalProps) => {
+    const { mutate: updateLabel, isPending } = useUpdateLabel();
+
+    const form = useForm({
+      initialValues: {
+        id: innerProps.label.id,
+        name: innerProps.label.name,
+        colour: innerProps.label.colour,
+        description: innerProps.label.description || "",
+      },
+    });
+
+    const handleSubmit = form.onSubmit((values) => {
+      updateLabel(values, {
+        onSuccess: () => {
+          notifications.show({
+            title: "Success",
+            message: "Label updated successfully",
+            color: "green",
+          });
+          onClose();
+        },
+        onError: (error) => {
+          notifications.show({
+            title: "Error",
+            message: error.message,
+            color: "red",
+          });
+        },
+      });
+    });
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <Stack>
+          <TextInput
+            label="Name"
+            placeholder="Enter label name"
+            withAsterisk
+            {...form.getInputProps("name")}
+          />
+          <ColorInput
+            label="Colour"
+            placeholder="Pick a colour"
+            withAsterisk
+            {...form.getInputProps("colour")}
+          />
+          <TextInput
+            label="Description"
+            placeholder="Enter description"
+            {...form.getInputProps("description")}
+          />
+          <Button type="submit" loading={isPending} mt="md">
+            Update Label
+          </Button>
+        </Stack>
+      </form>
+    );
+  },
 };
-
-function AddItem({ context, id }: ContextModalProps) {
-  const { mutate: addItem, isPending } = useCreateItem();
-  const { data: labels, isLoading: isLoadingLabels } = useGetLabels();
-
-  const form = useForm({
-    initialValues: {
-      name: "",
-      unit: "",
-      quantity: 1,
-      expiryDate: "",
-      expiryType: "Best before",
-      labels: [] as { id?: number; name: string; colour: string }[],
-      notes: [] as string[],
-    },
-  });
-
-  return (
-    <form
-      onSubmit={form.onSubmit((values) => {
-        addItem(values);
-        context.closeModal(id);
-      })}
-    >
-      <TextInput label="Name" {...form.getInputProps("name")} />
-      <Group justify="left">
-        <NumberInput label="Quantity" {...form.getInputProps("quantity")} />
-        <TextInput label="Unit" {...form.getInputProps("unit")} />
-      </Group>
-      <TextInput label="Expiry Date" {...form.getInputProps("expiryDate")} />
-      <Select
-        label="Expiry Type"
-        placeholder="Pick value"
-        data={["Best before", "Use by"]}
-        {...form.getInputProps("expiryType")}
-      />
-      {isLoadingLabels ? (
-        <></>
-      ) : (
-        <TagsInput
-          label="Labels"
-          placeholder="Tag this item"
-          data={labels?.map((label) => label.name)}
-          acceptValueOnBlur={false}
-          mt="md"
-          value={form.values.labels.map((label) => label.name)}
-          onChange={(values) => {}}
-        />
-      )}
-
-      <TextInput
-        label="Notes"
-        value={form.values.notes.join(", ")}
-        onChange={(e) =>
-          form.setFieldValue("notes", e.target.value.split(", "))
-        }
-      />
-      <Button type="submit" loading={isPending} mt="md">
-        Submit
-      </Button>
-    </form>
-  );
-}
-
-function EditItem({
-  context,
-  id,
-  innerProps,
-}: ContextModalProps<{ item: ItemWithNotesAndLabels }>) {
-  const { mutate: updateItem, isPending } = useUpdateItem();
-  const { data: labels, isLoading: isLoadingLabels } = useGetLabels();
-
-  const form = useForm({
-    initialValues: {
-      name: innerProps.item.name,
-      quantity: innerProps.item.quantity,
-      unit: innerProps.item.unit,
-      expiryDate: innerProps.item.expiryDate,
-      expiryType: innerProps.item.expiryType,
-      labels: innerProps.item.labels,
-      notes: innerProps.item.notes.map((note) => note.note),
-    },
-  });
-
-  return (
-    <form
-      onSubmit={form.onSubmit((values) => {
-        updateItem({
-          ...innerProps.item,
-          ...values,
-        });
-        context.closeModal(id);
-      })}
-    >
-      <TextInput label="Name" {...form.getInputProps("name")} />
-      <Group justify="left">
-        <NumberInput label="Quantity" {...form.getInputProps("quantity")} />
-        <TextInput label="Unit" {...form.getInputProps("unit")} />
-      </Group>
-      <TextInput label="Expiry Date" {...form.getInputProps("expiryDate")} />
-      <Select
-        label="Expiry Type"
-        placeholder="Pick value"
-        data={["Best before", "Use by"]}
-        {...form.getInputProps("expiryType")}
-      />
-      {isLoadingLabels ? (
-        <></>
-      ) : (
-        <TagsInput
-          label="Labels"
-          placeholder="Tag this item"
-          data={labels?.map((label) => label.name)}
-          acceptValueOnBlur={false}
-          mt="md"
-          value={form.values.labels.map((label) => label.name)}
-          onChange={(values) => {}}
-        />
-      )}
-      <TextInput
-        label="Notes"
-        value={form.values.notes.join(", ")}
-        onChange={(e) =>
-          form.setFieldValue("notes", e.target.value.split(", "))
-        }
-      />
-
-      <Button type="submit" loading={isPending} mt="md">
-        Submit
-      </Button>
-    </form>
-  );
-}
-
-function EditLabel({
-  context,
-  id,
-  innerProps,
-}: ContextModalProps<{ label: Label }>) {
-  const { mutate: updateLabel, isPending } = useUpdateLabel();
-
-  const form = useForm({
-    initialValues: {
-      name: innerProps.label.name,
-      colour: innerProps.label.colour,
-      description: innerProps.label.description,
-    },
-  });
-
-  return (
-    <form
-      onSubmit={form.onSubmit((values) => {
-        // updateLabel({ ...innerProps.label, ...values });
-        context.closeModal(id);
-      })}
-    >
-      <TextInput label="Name" {...form.getInputProps("name")} />
-
-      <ColorInput
-        label="Colour"
-        value={form.values.colour}
-        onChange={(value) => form.setFieldValue("colour", value)}
-      />
-
-      <TextInput label="Description" {...form.getInputProps("description")} />
-
-      <Button type="submit" loading={isPending} mt="md">
-        Submit
-      </Button>
-    </form>
-  );
-}
-
-function AddLabel({ context, id }: ContextModalProps) {
-  const { mutate: addLabel, isPending } = useCreateLabel();
-
-  const form = useForm({
-    initialValues: {
-      name: "",
-      colour: "",
-      description: "",
-    },
-  });
-
-  return (
-    <form
-      onSubmit={form.onSubmit((values) => {
-        addLabel(values);
-        context.closeModal(id);
-      })}
-    >
-      <TextInput label="Name" {...form.getInputProps("name")} />
-
-      <ColorInput
-        label="Colour"
-        value={form.values.colour}
-        onChange={(value) => form.setFieldValue("colour", value)}
-      />
-
-      <TextInput label="Description" {...form.getInputProps("description")} />
-
-      <Button type="submit" loading={isPending} mt="md">
-        Submit
-      </Button>
-    </form>
-  );
-}
