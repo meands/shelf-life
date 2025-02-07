@@ -19,6 +19,13 @@ router.get("/", async (req: Request, res: Response) => {
         labels: true,
         notes: true,
       },
+      orderBy: [
+        {
+          createdAt: "asc",
+        },
+        { updatedAt: "asc" },
+        { id: "asc" },
+      ],
     });
     res.status(200).json(items);
   } catch (error) {

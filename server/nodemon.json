@@ -1,6 +1,0 @@
-{
-  "watch": ["**/*.ts"],
-  "ignore": ["node_modules", "dist"],
-  "exec": "eslint . --ext ts && ts-node",
-  "ext": "ts"
-}

@@ -5,6 +5,8 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'user',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -13,11 +15,13 @@ CREATE TABLE "User" (
 CREATE TABLE "Item" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "quantity" DECIMAL(65,30) NOT NULL,
+    "quantity" DOUBLE PRECISION NOT NULL,
     "unit" TEXT NOT NULL,
     "expiryDate" TIMESTAMP(3) NOT NULL,
     "expiryType" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Item_pkey" PRIMARY KEY ("id")
 );
@@ -29,6 +33,8 @@ CREATE TABLE "Label" (
     "colour" TEXT NOT NULL,
     "description" TEXT,
     "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Label_pkey" PRIMARY KEY ("id")
 );
@@ -38,6 +44,8 @@ CREATE TABLE "Note" (
     "id" SERIAL NOT NULL,
     "note" TEXT NOT NULL,
     "itemId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Note_pkey" PRIMARY KEY ("id")
 );

@@ -4,6 +4,7 @@ expiry date tracker
 
 - [ ] note should be more elaborate - work with object not string
 - [ ] improve type export mechanism
+- [ ] flexible sorting on items table
 - [ ] access control based on user role
 
   - [x] add user id to item records and test on /items/:id
