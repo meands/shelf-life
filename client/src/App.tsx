@@ -12,6 +12,7 @@ import { Notifications } from "@mantine/notifications";
 import { Labels } from "./routes/Home/Labels/Labels";
 import { globalModals } from "./modals/availableModals";
 import axios from "axios";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const axiosInstance = axios.create({
   baseURL: "http://localhost:3000",
@@ -35,6 +36,7 @@ function App() {
           </ModalsProvider>
         </MantineProvider>
       </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

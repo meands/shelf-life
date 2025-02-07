@@ -3,6 +3,7 @@ import { modals } from "@mantine/modals";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useDeleteLabel, useGetLabels } from "@api/label";
 import { Label } from "@prisma/client";
+
 export function Labels() {
   const { data: labels, isLoading, error } = useGetLabels();
 
@@ -44,7 +45,7 @@ export function Labels() {
 
       <Button
         onClick={() =>
-          modals.openContextModal({ modal: "addLabel", innerProps: {} })
+          modals.openContextModal({ modal: "createLabel", innerProps: {} })
         }
         mt="md"
       >
@@ -68,7 +69,7 @@ function LabelActions({ label }: { label: Label }) {
           leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
           onClick={() =>
             modals.openContextModal({
-              modal: "editLabel",
+              modal: "updateLabel",
               innerProps: { label },
             })
           }
