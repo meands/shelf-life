@@ -3,7 +3,6 @@ expiry date tracker
 ## TODO
 
 - [ ] note should be more elaborate - work with object not string
-- [ ] create item with labels bug
 - [ ] improve type export mechanism
 - [ ] access control based on user role
 

@@ -122,7 +122,7 @@ function ItemActions({ item }: { item: Item }) {
           leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
           onClick={() =>
             modals.openContextModal({
-              modal: "editItem",
+              modal: "updateItem",
               innerProps: { item },
             })
           }

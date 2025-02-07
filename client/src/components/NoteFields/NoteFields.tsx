@@ -4,22 +4,21 @@ import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { Note } from "@shared/types";
 
 interface NoteFieldsProps {
-  form: UseFormReturnType<any>;
-  name?: string;
+  form: UseFormReturnType<{ notes: Note[] }>;
 }
 
-export function NoteFields({ form, name = "notes" }: NoteFieldsProps) {
-  const fields = form.values[name].map((note: Note, index: number) => (
-    <Group key={index} mt="xs">
+export function NoteFields({ form }: NoteFieldsProps) {
+  const fields = form.values.notes.map((note: Note, index: number) => (
+    <Group mt="xs">
       <TextInput
         placeholder="Add a note"
         style={{ flex: 1 }}
-        {...form.getInputProps(`${name}.${index}.note`)}
+        {...form.getInputProps(`notes.${index}.note`)}
       />
       <ActionIcon
         color="red"
-        onClick={() => form.removeListItem(name, index)}
-        disabled={form.values[name].length === 1}
+        onClick={() => form.removeListItem("notes", index)}
+        disabled={form.values.notes.length === 1}
       >
         <IconTrash size="1rem" />
       </ActionIcon>
@@ -31,11 +30,12 @@ export function NoteFields({ form, name = "notes" }: NoteFieldsProps) {
       {fields}
       <Group justify="center" mt="md">
         <Button
+          variant="outline"
           size="xs"
           leftSection={<IconPlus size="1rem" />}
-          onClick={() => form.insertListItem(name, { note: "" })}
+          onClick={() => form.insertListItem("notes", { note: "" })}
         >
-          Add Note
+          Note
         </Button>
       </Group>
     </Stack>
