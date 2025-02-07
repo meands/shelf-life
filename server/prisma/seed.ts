@@ -38,7 +38,7 @@ async function main() {
     data: [
       {
         name: "Apple",
-        quantity: 1,
+        quantity: 1.5,
         unit: "kg",
         expiryDate: new Date("2025-01-01"),
         expiryType: "Best Before",

@@ -18,11 +18,18 @@ export interface Note {
   note: string;
 }
 
+export interface Label {
+  id?: number;
+  name: string;
+  colour: string;
+  description: string | null;
+}
+
 export interface CreateItemRequest {
   name: string;
   quantity: number;
   unit: string;
-  expiryDate: string;
+  expiryDate: Date;
   expiryType: string;
   labels: Label[];
   notes: Note[];
@@ -32,14 +39,6 @@ export interface UpdateItemRequest extends CreateItemRequest {
   id: number;
 }
 
-// Labels
-export interface Label {
-  id?: number;
-  name: string;
-  colour: string;
-  description?: string;
-}
-
 export interface CreateLabelRequest {
   name: string;
   colour: string;
@@ -47,7 +46,9 @@ export interface CreateLabelRequest {
   itemIds?: number[];
 }
 
-export interface UpdateLabelRequest extends CreateLabelRequest {}
+export interface UpdateLabelRequest extends CreateLabelRequest {
+  id: number;
+}
 
 export interface CreateNoteRequest {
   itemId: number;

@@ -6,7 +6,9 @@
     "start": "nodemon server.ts",
     "build": "tsc",
     "reset": "prisma migrate reset --force",
-    "clean-start": "npm run reset && npm run start"
+    "clean-start": "npm run reset && npm run start",
+    "lint": "eslint . --ext ts --max-warnings 0",
+    "lint:fix": "eslint . --ext ts --fix --max-warnings 0"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -28,6 +30,9 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.11.24",
+    "@typescript-eslint/eslint-plugin": "^8.23.0",
+    "@typescript-eslint/parser": "^8.23.0",
+    "eslint": "^9.19.0",
     "nodemon": "^3.1.9",
     "prisma": "^6.2.1",
     "ts-node": "^10.9.2",

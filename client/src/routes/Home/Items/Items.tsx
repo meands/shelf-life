@@ -14,7 +14,8 @@ import { useDeleteItem, useItems, useUpdateItem } from "@api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
 import styles from "./styles.module.css";
-import { Item, Label, Note } from "@prisma/client";
+import { ItemWithNotesAndLabels } from "@types";
+import { Item, Label } from "@prisma/client";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
@@ -64,16 +65,15 @@ function LabelSwatch({ label }: { label: Label }) {
   );
 }
 
-// TODO: typing here - has notes
-function ItemRow({ item }: { item: Item & { notes: Note[] } }) {
+function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
   const [quantity, setQuantity] = useState(item.quantity);
   const { mutate: updateItem } = useUpdateItem();
 
-  const handleQuantityChange = useDebouncedCallback((value) => {
+  const handleQuantityChange = useDebouncedCallback((value: number) => {
     updateItem({
       ...item,
       quantity: value,
-      notes: item.map((note) => note.note),
+      expiryDate: new Date(item.expiryDate),
     });
   }, 1000);
 
@@ -91,7 +91,7 @@ function ItemRow({ item }: { item: Item & { notes: Note[] } }) {
       </Table.Td>
       <Table.Td>{item.unit}</Table.Td>
       <Table.Td>{item.expiryType}</Table.Td>
-      <Table.Td>{item.expiryDate}</Table.Td>
+      <Table.Td>{item.expiryDate.toLocaleDateString()}</Table.Td>
       <Table.Td>
         {new Date() < new Date(item.expiryDate) ? ":)" : ":("}
       </Table.Td>

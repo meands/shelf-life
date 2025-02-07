@@ -11,42 +11,17 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useCreateItem, useUpdateItem } from "@api/item";
 import { useCreateLabel, useUpdateLabel } from "@api/label";
-import { Label, Note } from "@shared/types";
+import {
+  CreateLabelRequest,
+  Label,
+  UpdateItemRequest,
+  UpdateLabelRequest,
+} from "@shared/types";
 import { NoteFields } from "@components/NoteFields/NoteFields";
-
-interface CreateItemModalProps {
-  onClose: () => void;
-}
-
-interface UpdateItemModalProps {
-  onClose: () => void;
-  innerProps: {
-    item: {
-      id: number;
-      name: string;
-      quantity: number;
-      unit: string;
-      expiryDate: string;
-      expiryType: string;
-      labels: Label[];
-      notes: Note[];
-    };
-  };
-}
-
-interface CreateLabelModalProps {
-  onClose: () => void;
-}
-
-interface UpdateLabelModalProps {
-  onClose: () => void;
-  innerProps: {
-    label: Label;
-  };
-}
+import { ContextModalProps } from "@mantine/modals";
 
 export const globalModals = {
-  createItem: ({ onClose }: CreateItemModalProps) => {
+  createItem: ({ context, id }: ContextModalProps) => {
     const { mutate: createItem, isPending } = useCreateItem();
 
     const form = useForm({
@@ -62,23 +37,29 @@ export const globalModals = {
     });
 
     const handleSubmit = form.onSubmit((values) => {
-      createItem(values, {
-        onSuccess: () => {
-          notifications.show({
-            title: "Success",
-            message: "Item created successfully",
-            color: "green",
-          });
-          onClose();
+      createItem(
+        {
+          ...values,
+          expiryDate: new Date(values.expiryDate),
         },
-        onError: (error) => {
-          notifications.show({
-            title: "Error",
-            message: error.message,
-            color: "red",
-          });
-        },
-      });
+        {
+          onSuccess: () => {
+            notifications.show({
+              title: "Success",
+              message: "Item created successfully",
+              color: "green",
+            });
+            context.closeModal(id);
+          },
+          onError: (error) => {
+            notifications.show({
+              title: "Error",
+              message: error.message,
+              color: "red",
+            });
+          },
+        }
+      );
     });
 
     return (
@@ -124,22 +105,15 @@ export const globalModals = {
     );
   },
 
-  updateItem: ({ onClose, innerProps }: UpdateItemModalProps) => {
+  updateItem: ({
+    context,
+    id,
+    innerProps,
+  }: ContextModalProps<{ item: UpdateItemRequest }>) => {
     const { mutate: updateItem, isPending } = useUpdateItem();
 
-    const form = useForm({
-      initialValues: {
-        id: innerProps.item.id,
-        name: innerProps.item.name,
-        quantity: innerProps.item.quantity,
-        unit: innerProps.item.unit,
-        expiryDate: innerProps.item.expiryDate,
-        expiryType: innerProps.item.expiryType,
-        labels: innerProps.item.labels,
-        notes: innerProps.item.notes.length
-          ? innerProps.item.notes
-          : [{ note: "" }],
-      },
+    const form = useForm<UpdateItemRequest>({
+      initialValues: innerProps.item,
     });
 
     const handleSubmit = form.onSubmit((values) => {
@@ -150,7 +124,7 @@ export const globalModals = {
             message: "Item updated successfully",
             color: "green",
           });
-          onClose();
+          context.closeModal(id);
         },
         onError: (error) => {
           notifications.show({
@@ -205,10 +179,10 @@ export const globalModals = {
     );
   },
 
-  createLabel: ({ onClose }: CreateLabelModalProps) => {
+  createLabel: ({ context, id }: ContextModalProps) => {
     const { mutate: createLabel, isPending } = useCreateLabel();
 
-    const form = useForm({
+    const form = useForm<CreateLabelRequest>({
       initialValues: {
         name: "",
         colour: "#000000",
@@ -224,7 +198,7 @@ export const globalModals = {
             message: "Label created successfully",
             color: "green",
           });
-          onClose();
+          context.closeModal(id);
         },
         onError: (error) => {
           notifications.show({
@@ -264,10 +238,14 @@ export const globalModals = {
     );
   },
 
-  updateLabel: ({ onClose, innerProps }: UpdateLabelModalProps) => {
+  updateLabel: ({
+    context,
+    id,
+    innerProps,
+  }: ContextModalProps<{ label: Label & { id: number } }>) => {
     const { mutate: updateLabel, isPending } = useUpdateLabel();
 
-    const form = useForm({
+    const form = useForm<UpdateLabelRequest>({
       initialValues: {
         id: innerProps.label.id,
         name: innerProps.label.name,
@@ -284,7 +262,7 @@ export const globalModals = {
             message: "Label updated successfully",
             color: "green",
           });
-          onClose();
+          context.closeModal(id);
         },
         onError: (error) => {
           notifications.show({

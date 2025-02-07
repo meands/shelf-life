@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../App";
-import { Label } from "@prisma/client";
+import { CreateLabelRequest, Label, UpdateLabelRequest } from "@shared/types";
 
 export function useGetLabels() {
   return useQuery({
@@ -14,7 +14,7 @@ export function useCreateLabel() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (label: Omit<Label, "id">) =>
+    mutationFn: async (label: CreateLabelRequest) =>
       axiosInstance.post("/labels", label).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["labels"] });
@@ -26,7 +26,7 @@ export function useUpdateLabel() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (label: Label) =>
+    mutationFn: async (label: UpdateLabelRequest) =>
       axiosInstance.put(`/labels/${label.id}`, label).then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["labels"] });

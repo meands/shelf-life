@@ -4,8 +4,6 @@ import { Prisma } from "@prisma/client";
 import { authenticateUser } from "../../middleware/auth";
 import { UpdateItemRequest } from "@shared/types";
 import { CreateItemRequest } from "@shared/types";
-import { Note } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
 
 const router = express.Router();
 
@@ -59,11 +57,11 @@ router.post(
       const item = await prisma.item.create({
         data: {
           ...itemData,
-          quantity: new Decimal(itemData.quantity),
+          quantity: itemData.quantity,
           expiryDate: new Date(itemData.expiryDate),
           userId: (req as any).user.id,
           notes: {
-            create: notes.map((note) => ({ note })),
+            create: notes.map((note) => ({ note: note.note })),
           },
           labels: {
             connectOrCreate: labels.map((label) => ({

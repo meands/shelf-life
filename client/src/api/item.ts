@@ -1,19 +1,31 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../App";
-import { Item } from "@prisma/client";
-import { CreateItemRequest, ItemWithNotesAndLabels } from "@types";
+import { CreateItemRequest, UpdateItemRequest } from "@shared/types";
+import { ItemWithNotesAndLabels } from "@types";
 
 export const useItems = () => {
   return useQuery<ItemWithNotesAndLabels[]>({
     queryKey: ["items"],
-    queryFn: () => axiosInstance.get("/items").then((res) => res.data),
+    queryFn: () =>
+      axiosInstance.get("/items").then((res) =>
+        // @ts-expect-error
+        // TODO: item is jsonified ItemWithNotesAndLabels, so date becomes string etc - casting for now but need to think about this
+        res.data.map((item) => ({
+          ...item,
+          expiryDate: new Date(item.expiryDate),
+        }))
+      ),
   });
 };
 
 export const useItem = (id: number) => {
   return useQuery<ItemWithNotesAndLabels>({
     queryKey: ["items", id],
-    queryFn: () => axiosInstance.get(`/items/${id}`).then((res) => res.data),
+    queryFn: () =>
+      axiosInstance.get(`/items/${id}`).then((res) => ({
+        ...res.data,
+        expiryDate: new Date(res.data.expiryDate),
+      })),
   });
 };
 
@@ -33,7 +45,7 @@ export const useUpdateItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (updatedItem: Omit<Item, "notes"> & { notes: string[] }) =>
+    mutationFn: (updatedItem: UpdateItemRequest) =>
       axiosInstance
         .put(`/items/${updatedItem.id}`, updatedItem)
         .then((res) => res.data),
