@@ -2,14 +2,14 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
-import { Home } from "./routes/Home/Home";
+import { Main } from "./routes/Main/Main";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Login } from "./components/Login/Login";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
-import { Items } from "./routes/Home/Items/Items";
+import { Items } from "./routes/Main/Items/Items";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
-import { Labels } from "./routes/Home/Labels/Labels";
+import { Labels } from "./routes/Main/Labels/Labels";
 import { globalModals } from "./modals/availableModals";
 import axios from "axios";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -44,16 +44,16 @@ function App() {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/login" element={<Login />} />
       <Route
-        path="/home"
+        path="/"
         element={
           <ProtectedRoute>
-            <Home />
+            <Main />
           </ProtectedRoute>
         }
       >
+        <Route index element={<Navigate to="/items" replace />} />
         <Route path="items" element={<Items />} />
         <Route path="labels" element={<Labels />} />
       </Route>

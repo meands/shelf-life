@@ -93,7 +93,7 @@ function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
       <Table.Td>{item.expiryType}</Table.Td>
       <Table.Td>{item.expiryDate.toLocaleDateString()}</Table.Td>
       <Table.Td>
-        {new Date() < new Date(item.expiryDate) ? ":)" : ":("}
+        {new Date() < new Date(item.expiryDate) ? "in date" : "expired"}
       </Table.Td>
       <Table.Td style={{ display: "flex", flexWrap: "wrap" }}>
         {item.labels.map((label) => (
@@ -135,6 +135,7 @@ function ItemActions({ item }: { item: Item }) {
             <IconTrash style={{ width: rem(14), height: rem(14) }} />
           }
           onClick={() => deleteItem(item.id)}
+          color="red"
         >
           Delete
         </Menu.Item>
@@ -148,7 +149,7 @@ export function AddItemBtn() {
     <Button
       onClick={() =>
         modals.openContextModal({
-          modal: "addItem",
+          modal: "createItem",
           innerProps: {},
         })
       }

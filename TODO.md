@@ -5,11 +5,14 @@ expiry date tracker
 - [ ] note should be more elaborate - work with object not string
 - [ ] improve type export mechanism
 - [ ] flexible sorting on items table
+- [ ] label swatch
 - [ ] access control based on user role
 
   - [x] add user id to item records and test on /items/:id
   - [ ] admin can do everything
   - [x] user can only operate on their own items
+
+- [ ] admin panel
 
 - [x] availableModals typing error
 - [x] DB setup
