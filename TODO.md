@@ -2,7 +2,7 @@ expiry date tracker
 
 ## TODO
 
-- [ ] note should be more elaborate - work with object not string
+- [ ] react query cache invalidation flaky (e.g. creating item, label)
 - [ ] improve type export mechanism
 - [ ] flexible sorting on items table
 - [ ] label swatch
@@ -13,6 +13,7 @@ expiry date tracker
   - [x] user can only operate on their own items
 
 - [ ] admin panel
+- [ ] notifications for when expiry is close
 
 - [x] availableModals typing error
 - [x] DB setup
@@ -25,3 +26,4 @@ expiry date tracker
 - [x] Icon performance
 - [x] Track amount via Quantity and Unit
 - [x] Notes impl
+- [x] note should be more elaborate - work with object not string

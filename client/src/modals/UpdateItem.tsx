@@ -87,7 +87,14 @@ export function UpdateItemModal({
           data={["Best before", "Use by"]}
           {...form.getInputProps("expiryType")}
         />
-        <NoteFields form={form} />
+
+        <NoteFields
+          notes={form.values.notes}
+          addNote={(note) => form.insertListItem("notes", note)}
+          removeNote={(idx) => form.removeListItem("notes", idx)}
+          getInputProps={form.getInputProps}
+        />
+
         <Button type="submit" loading={isPending} mt="md">
           Update Item
         </Button>

@@ -1,25 +1,29 @@
 import { ActionIcon, Button, Group, Stack, TextInput } from "@mantine/core";
-import { UseFormReturnType } from "@mantine/form";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
-import { Note } from "@shared/types";
+import { NoteWithOptionalId } from "@shared/types";
+import { GetInputProps } from "node_modules/@mantine/form/lib/types";
 
 interface NoteFieldsProps {
-  form: UseFormReturnType<{ notes: Note[] }>;
+  notes: NoteWithOptionalId[];
+  addNote: (note: NoteWithOptionalId) => void;
+  removeNote: (idx: number) => void;
+  getInputProps: GetInputProps<{ notes: NoteWithOptionalId[] }>;
 }
 
-export function NoteFields({ form }: NoteFieldsProps) {
-  const fields = form.values.notes.map((note: Note, index: number) => (
-    <Group mt="xs">
+export function NoteFields({
+  notes,
+  getInputProps,
+  addNote,
+  removeNote,
+}: NoteFieldsProps) {
+  const fields = notes.map((_, index: number) => (
+    <Group key={index} mt="xs">
       <TextInput
         placeholder="Add a note"
         style={{ flex: 1 }}
-        {...form.getInputProps(`notes.${index}.note`)}
+        {...getInputProps(`notes.${index}.note`)}
       />
-      <ActionIcon
-        color="red"
-        onClick={() => form.removeListItem("notes", index)}
-        disabled={form.values.notes.length === 1}
-      >
+      <ActionIcon color="red" onClick={() => removeNote(index)}>
         <IconTrash size="1rem" />
       </ActionIcon>
     </Group>
@@ -33,7 +37,7 @@ export function NoteFields({ form }: NoteFieldsProps) {
           variant="outline"
           size="xs"
           leftSection={<IconPlus size="1rem" />}
-          onClick={() => form.insertListItem("notes", { note: "" })}
+          onClick={() => addNote({ note: "" })}
         >
           Note
         </Button>

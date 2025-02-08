@@ -77,7 +77,7 @@ function RegisterForm() {
             color: "green",
           });
           localStorage.setItem("token", data.token);
-          navigate("/home");
+          navigate("/");
         },
         onError: (error) => {
           notifications.show({
@@ -146,7 +146,7 @@ function LoginForm() {
     signIn(values, {
       onSuccess: (data) => {
         localStorage.setItem("token", data.token);
-        navigate("/home");
+        navigate("/");
       },
       onError: (error) => {
         notifications.show({

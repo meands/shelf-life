@@ -16,8 +16,16 @@ router.get("/", async (req: Request, res: Response) => {
         userId: (req as any).user.id,
       },
       include: {
-        labels: true,
-        notes: true,
+        labels: {
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+        notes: {
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
       },
       orderBy: [
         {

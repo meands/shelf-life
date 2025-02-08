@@ -13,12 +13,12 @@ export interface WelcomeResponse {
   message: string;
 }
 
-export interface Note {
+export interface NoteWithOptionalId {
   id?: number;
   note: string;
 }
 
-export interface Label {
+export interface LabelWithOptionalId {
   id?: number;
   name: string;
   colour: string;
@@ -31,8 +31,8 @@ export interface CreateItemRequest {
   unit: string;
   expiryDate: Date;
   expiryType: string;
-  labels: Label[];
-  notes: Note[];
+  labels: LabelWithOptionalId[];
+  notes: NoteWithOptionalId[];
 }
 
 export interface UpdateItemRequest extends CreateItemRequest {

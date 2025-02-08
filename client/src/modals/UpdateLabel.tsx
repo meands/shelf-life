@@ -2,14 +2,14 @@ import { Button, ColorInput, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useUpdateLabel } from "@api/label";
-import { Label, UpdateLabelRequest } from "@shared/types";
+import { LabelWithOptionalId, UpdateLabelRequest } from "@shared/types";
 import { ContextModalProps } from "@mantine/modals";
 
 export function UpdateLabelModal({
   context,
   id,
   innerProps,
-}: ContextModalProps<{ label: Label & { id: number } }>) {
+}: ContextModalProps<{ label: LabelWithOptionalId & { id: number } }>) {
   const { mutate: updateLabel, isPending } = useUpdateLabel();
 
   const form = useForm<UpdateLabelRequest>({
