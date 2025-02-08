@@ -3,7 +3,11 @@ import "@mantine/notifications/styles.css";
 import { MantineProvider } from "@mantine/core";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Main } from "./routes/Main/Main";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { Login } from "./components/Login/Login";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import { Items } from "./routes/Main/Items/Items";
@@ -23,7 +27,21 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+  queryCache: new QueryCache({
+    onError: (error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+    },
+  }),
+});
 
 function App() {
   return (
