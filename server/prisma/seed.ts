@@ -194,25 +194,56 @@ async function main() {
     },
   });
 
-  await prisma.note.create({
-    data: {
-      note: "This is a note",
-      itemId: 1,
-    },
+  await prisma.note.createMany({
+    data: [
+      {
+        note: "This is a note",
+        itemId: 1,
+      },
+      {
+        note: "This is a note",
+        itemId: 2,
+      },
+      {
+        note: "This is a note",
+        itemId: 3,
+      },
+    ],
   });
 
-  await prisma.note.create({
-    data: {
-      note: "This is note 2",
-      itemId: 2,
-    },
-  });
-
-  await prisma.note.create({
-    data: {
-      note: "This is note 3",
-      itemId: 1,
-    },
+  await prisma.reminder.createMany({
+    data: [
+      {
+        itemId: 1,
+        userId: 1,
+        isEnabled: true,
+        daysBeforeExpiry: 1,
+      },
+      {
+        itemId: 2,
+        userId: 1,
+        isEnabled: true,
+        daysBeforeExpiry: 2,
+      },
+      {
+        itemId: 3,
+        userId: 1,
+        isEnabled: false,
+        daysBeforeExpiry: 3,
+      },
+      {
+        itemId: 4,
+        userId: 2,
+        isEnabled: true,
+        daysBeforeExpiry: 4,
+      },
+      {
+        itemId: 5,
+        userId: 2,
+        isEnabled: true,
+        daysBeforeExpiry: 5,
+      },
+    ],
   });
 }
 
