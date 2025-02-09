@@ -25,6 +25,24 @@ export interface LabelWithOptionalId {
   description: string | null;
 }
 
+export interface ReminderSettings {
+  id?: number;
+  daysBeforeExpiry: number;
+  itemId?: number; // if null, applies to all items
+  userId: number;
+  isEnabled: boolean;
+}
+
+export interface CreateReminderRequest {
+  daysBeforeExpiry: number;
+  itemId?: number;
+  isEnabled?: boolean;
+}
+
+export interface UpdateReminderRequest extends CreateReminderRequest {
+  id: number;
+}
+
 export interface CreateItemRequest {
   name: string;
   quantity: number;
@@ -33,6 +51,7 @@ export interface CreateItemRequest {
   expiryType: string;
   labels: LabelWithOptionalId[];
   notes: NoteWithOptionalId[];
+  reminder?: CreateReminderRequest;
 }
 
 export interface UpdateItemRequest extends CreateItemRequest {

@@ -10,6 +10,7 @@ import labelRouter from "@api/label/labelApi";
 import noteRouter from "@api/note/noteApi";
 import userRouter from "@api/user/userApi";
 import { authenticateUser } from "@middleware/auth";
+import reminderRouter from "@api/reminder/reminderApi";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(authenticateUser);
 app.use("/items", itemRouter);
 app.use("/labels", labelRouter);
 app.use("/notes", noteRouter);
+app.use("/reminders", reminderRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

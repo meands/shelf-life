@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   displayName String
-  email       String   @unique
+  email       String     @unique
   password    String
-  role        String   @default("user")
+  role        String     @default("user")
   items       Item[]
   labels      Label[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  reminders   Reminder[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Item {
-  id         Int      @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   name       String
   quantity   Float
   unit       String
@@ -28,10 +29,11 @@ model Item {
   expiryType String
   labels     Label[]
   notes      Note[]
-  user       User     @relation(fields: [userId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
   userId     Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  reminders  Reminder[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model Label {
@@ -53,4 +55,19 @@ model Note {
   itemId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Reminder {
+  id               Int      @id @default(autoincrement())
+  daysBeforeExpiry Int
+  isEnabled        Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  userId           Int
+  itemId           Int?
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item             Item?    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([itemId])
 }
