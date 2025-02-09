@@ -8,22 +8,36 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { useUpdateItem } from "@api/item";
-import { UpdateItemRequest } from "@shared/types";
-import { ContextModalProps } from "@mantine/modals";
+import { useItem, useUpdateItem } from "@api/item";
 import { NoteFields } from "@components/NoteFields/NoteFields";
+import { ItemWithNotesAndLabels, UpdateItemRequest } from "@types";
+import { modals } from "@mantine/modals";
+import { UseMutateFunction } from "@tanstack/react-query";
 
-export function UpdateItemModal({
-  context,
-  id,
-  innerProps,
-}: ContextModalProps<{ item: UpdateItemRequest }>) {
-  const { mutate: updateItem, isPending } = useUpdateItem();
+export function UpdateItemModal({ itemId }: { itemId: number }) {
+  const { data: item, isLoading } = useItem(itemId);
+  const { mutate: updateItem } = useUpdateItem();
 
+  if (isLoading) return <div>Loading...</div>;
+  if (!item) return <div>Item not found</div>;
+  return <UpdateItemForm item={item} updateItem={updateItem} />;
+}
+
+function UpdateItemForm({
+  item,
+  updateItem,
+}: {
+  item: ItemWithNotesAndLabels;
+  updateItem: UseMutateFunction<
+    ItemWithNotesAndLabels,
+    Error,
+    UpdateItemRequest
+  >;
+}) {
   const form = useForm({
     initialValues: {
-      ...innerProps.item,
-      expiryDate: innerProps.item.expiryDate.toISOString().split("T")[0],
+      ...item,
+      expiryDate: item.expiryDate.toISOString().split("T")[0],
     },
   });
 
@@ -40,7 +54,7 @@ export function UpdateItemModal({
             message: "Item updated successfully",
             color: "green",
           });
-          context.closeModal(id);
+          modals.closeAll();
         },
         onError: (error) => {
           notifications.show({
@@ -95,7 +109,7 @@ export function UpdateItemModal({
           getInputProps={form.getInputProps}
         />
 
-        <Button type="submit" loading={isPending} mt="md">
+        <Button type="submit" mt="md">
           Update Item
         </Button>
       </Stack>

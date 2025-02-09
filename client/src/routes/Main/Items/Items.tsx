@@ -9,13 +9,15 @@ import {
   Table,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { IconBell, IconEdit, IconTrash } from "@tabler/icons-react";
 import { useDeleteItem, useItems, useUpdateItem } from "@api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
 import styles from "./styles.module.css";
 import { ItemWithNotesAndLabels } from "@types";
 import { Item, Label } from "@prisma/client";
+import { UpdateItemModal } from "../../../modals/UpdateItem";
+import { ReminderSettings } from "@components/ReminderSettings/ReminderSettings";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
@@ -121,13 +123,23 @@ function ItemActions({ item }: { item: Item }) {
         <Menu.Item
           leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
           onClick={() =>
-            modals.openContextModal({
-              modal: "updateItem",
-              innerProps: { item },
+            modals.open({
+              children: <UpdateItemModal itemId={item.id} />,
             })
           }
         >
-          Edit
+          Edit Item
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={<IconBell style={{ width: rem(14), height: rem(14) }} />}
+          onClick={() =>
+            modals.open({
+              children: <ReminderSettings itemId={item.id} />,
+            })
+          }
+        >
+          Edit Reminder
         </Menu.Item>
 
         <Menu.Item

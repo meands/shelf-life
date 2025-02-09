@@ -2,6 +2,10 @@ expiry date tracker
 
 ## TODO
 
+- [ ] notifications for when expiry is close
+  - [ ] reminder page
+  - [ ] item specific reminder should inherit from user global settings
+- [ ] move away from context modals
 - [ ] react query cache invalidation flaky (e.g. creating item, label)
 - [ ] improve type export mechanism
 - [ ] flexible sorting on items table
@@ -13,8 +17,6 @@ expiry date tracker
   - [x] user can only operate on their own items
 
 - [ ] admin panel
-- [ ] notifications for when expiry is close
-
 - [x] availableModals typing error
 - [x] DB setup
 - [x] Password hashing

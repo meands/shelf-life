@@ -22,6 +22,14 @@ router.get("/", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/item/:itemId", async (req: Request, res: Response) => {
+  const itemId = parseInt(req.params.itemId);
+  const reminder = await prisma.reminder.findFirst({
+    where: { itemId },
+  });
+  res.status(200).json(reminder);
+});
+
 // Create reminder
 router.post(
   "/",
