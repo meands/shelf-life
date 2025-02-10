@@ -9,3 +9,7 @@ export { ApiResponse, ErrorResponse } from "@shared/types";
 export type ItemWithNotesAndLabels = Prisma.ItemGetPayload<{
   include: { notes: true; labels: true };
 }>;
+
+export type ReminderWithItem = Prisma.ReminderGetPayload<{
+  include: { item: true };
+}>;

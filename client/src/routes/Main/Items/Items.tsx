@@ -17,7 +17,7 @@ import styles from "./styles.module.css";
 import { ItemWithNotesAndLabels } from "@types";
 import { Item, Label } from "@prisma/client";
 import { UpdateItemModal } from "../../../modals/UpdateItem";
-import { ReminderSettings } from "@components/ReminderSettings/ReminderSettings";
+import { UpdateReminderSettings } from "@components/ReminderSettings/ReminderSettings";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
@@ -135,7 +135,7 @@ function ItemActions({ item }: { item: Item }) {
           leftSection={<IconBell style={{ width: rem(14), height: rem(14) }} />}
           onClick={() =>
             modals.open({
-              children: <ReminderSettings itemId={item.id} />,
+              children: <UpdateReminderSettings itemId={item.id} />,
             })
           }
         >

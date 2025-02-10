@@ -2,9 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../App";
 import { CreateReminderRequest, UpdateReminderRequest } from "@shared/types";
 import { Reminder } from "@prisma/client";
+import { ReminderWithItem } from "@types";
 
 export function useReminders() {
-  return useQuery<Reminder[]>({
+  return useQuery<ReminderWithItem[]>({
     queryKey: ["reminders"],
     queryFn: () => axiosInstance.get("/reminders").then((res) => res.data),
   });

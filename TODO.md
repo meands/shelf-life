@@ -3,7 +3,7 @@ expiry date tracker
 ## TODO
 
 - [ ] notifications for when expiry is close
-  - [ ] reminder page
+  - [x] reminder page
   - [ ] item specific reminder should inherit from user global settings
 - [ ] move away from context modals
 - [ ] react query cache invalidation flaky (e.g. creating item, label)

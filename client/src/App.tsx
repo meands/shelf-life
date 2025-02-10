@@ -15,6 +15,7 @@ import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { Labels } from "./routes/Main/Labels/Labels";
 import { globalModals } from "./modals/availableModals";
+import { Reminders } from "./routes/Main/Reminders/Reminders";
 import axios from "axios";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -74,6 +75,7 @@ function AppRoutes() {
         <Route index element={<Navigate to="/items" replace />} />
         <Route path="items" element={<Items />} />
         <Route path="labels" element={<Labels />} />
+        <Route path="reminders" element={<Reminders />} />
       </Route>
     </Routes>
   );
