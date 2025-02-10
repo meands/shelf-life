@@ -14,7 +14,6 @@ import { Items } from "./routes/Main/Items/Items";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { Labels } from "./routes/Main/Labels/Labels";
-import { globalModals } from "./modals/availableModals";
 import { Reminders } from "./routes/Main/Reminders/Reminders";
 import axios from "axios";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -50,7 +49,7 @@ function App() {
       <BrowserRouter>
         <MantineProvider>
           <Notifications />
-          <ModalsProvider modals={globalModals}>
+          <ModalsProvider>
             <AppRoutes />
           </ModalsProvider>
         </MantineProvider>

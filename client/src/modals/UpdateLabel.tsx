@@ -2,22 +2,19 @@ import { Button, ColorInput, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useUpdateLabel } from "@api/label";
-import { LabelWithOptionalId, UpdateLabelRequest } from "@shared/types";
-import { ContextModalProps } from "@mantine/modals";
+import { UpdateLabelRequest } from "@shared/types";
+import { Label } from "@prisma/client";
+import { modals } from "@mantine/modals";
 
-export function UpdateLabelModal({
-  context,
-  id,
-  innerProps,
-}: ContextModalProps<{ label: LabelWithOptionalId & { id: number } }>) {
+export function UpdateLabelModal({ label }: { label: Label }) {
   const { mutate: updateLabel, isPending } = useUpdateLabel();
 
   const form = useForm<UpdateLabelRequest>({
     initialValues: {
-      id: innerProps.label.id,
-      name: innerProps.label.name,
-      colour: innerProps.label.colour,
-      description: innerProps.label.description || "",
+      id: label.id,
+      name: label.name,
+      colour: label.colour,
+      description: label.description || "",
     },
   });
 
@@ -29,7 +26,7 @@ export function UpdateLabelModal({
           message: "Label updated successfully",
           color: "green",
         });
-        context.closeModal(id);
+        modals.closeAll();
       },
       onError: (error) => {
         notifications.show({

@@ -4,7 +4,7 @@ expiry date tracker
 
 - [ ] notifications for when expiry is close
   - [x] reminder page
-  - [ ] item specific reminder should inherit from user global settings
+  - [x] item specific reminder should inherit from user global settings
 - [ ] move away from context modals
 - [ ] react query cache invalidation flaky (e.g. creating item, label)
 - [ ] improve type export mechanism

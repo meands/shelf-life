@@ -3,6 +3,8 @@ import { modals } from "@mantine/modals";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useDeleteLabel, useGetLabels } from "@api/label";
 import { Label } from "@prisma/client";
+import { CreateLabelModal } from "../../../modals/CreateLabel";
+import { UpdateLabelModal } from "../../../modals/UpdateLabel";
 
 export function Labels() {
   const { data: labels, isLoading, error } = useGetLabels();
@@ -44,9 +46,7 @@ export function Labels() {
       </Table>
 
       <Button
-        onClick={() =>
-          modals.openContextModal({ modal: "createLabel", innerProps: {} })
-        }
+        onClick={() => modals.open({ children: <CreateLabelModal /> })}
         mt="md"
       >
         Add Label
@@ -68,9 +68,8 @@ function LabelActions({ label }: { label: Label }) {
         <Menu.Item
           leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
           onClick={() =>
-            modals.openContextModal({
-              modal: "updateLabel",
-              innerProps: { label },
+            modals.open({
+              children: <UpdateLabelModal label={label} />,
             })
           }
         >

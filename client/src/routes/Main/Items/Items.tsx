@@ -18,6 +18,7 @@ import { ItemWithNotesAndLabels } from "@types";
 import { Item, Label } from "@prisma/client";
 import { UpdateItemModal } from "../../../modals/UpdateItem";
 import { UpdateReminderSettings } from "@components/ReminderSettings/ReminderSettings";
+import { CreateItemModal } from "../../../modals/CreateItem";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
@@ -160,9 +161,8 @@ export function AddItemBtn() {
   return (
     <Button
       onClick={() =>
-        modals.openContextModal({
-          modal: "createItem",
-          innerProps: {},
+        modals.open({
+          children: <CreateItemModal />,
         })
       }
     >

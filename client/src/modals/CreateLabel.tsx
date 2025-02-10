@@ -3,9 +3,9 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useCreateLabel } from "@api/label";
 import { CreateLabelRequest } from "@shared/types";
-import { ContextModalProps } from "@mantine/modals";
+import { modals } from "@mantine/modals";
 
-export function CreateLabelModal({ context, id }: ContextModalProps) {
+export function CreateLabelModal() {
   const { mutate: createLabel, isPending } = useCreateLabel();
 
   const form = useForm<CreateLabelRequest>({
@@ -24,7 +24,7 @@ export function CreateLabelModal({ context, id }: ContextModalProps) {
           message: "Label created successfully",
           color: "green",
         });
-        context.closeModal(id);
+        modals.closeAll();
       },
       onError: (error) => {
         notifications.show({

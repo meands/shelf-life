@@ -9,10 +9,10 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useCreateItem } from "@api/item";
-import { ContextModalProps } from "@mantine/modals";
 import { NoteFields } from "@components/NoteFields/NoteFields";
+import { modals } from "@mantine/modals";
 
-export function CreateItemModal({ context, id }: ContextModalProps) {
+export function CreateItemModal() {
   const { mutate: createItem, isPending } = useCreateItem();
 
   const form = useForm({
@@ -40,7 +40,7 @@ export function CreateItemModal({ context, id }: ContextModalProps) {
             message: "Item created successfully",
             color: "green",
           });
-          context.closeModal(id);
+          modals.closeAll();
         },
         onError: (error) => {
           notifications.show({
