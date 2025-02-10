@@ -5,7 +5,11 @@ expiry date tracker
 - [ ] notifications for when expiry is close
   - [x] reminder page
   - [x] item specific reminder should inherit from user global settings
-- [ ] move away from context modals
+- [ ] move item down when quantity reaches 0
+- [ ] search bar
+  - [ ] labels page
+  - [ ] items page
+  - [ ] reminders page
 - [ ] react query cache invalidation flaky (e.g. creating item, label)
 - [ ] improve type export mechanism
 - [ ] flexible sorting on items table
@@ -29,3 +33,4 @@ expiry date tracker
 - [x] Track amount via Quantity and Unit
 - [x] Notes impl
 - [x] note should be more elaborate - work with object not string
+- [x] move away from context modals

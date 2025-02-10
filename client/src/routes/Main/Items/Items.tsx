@@ -2,10 +2,10 @@ import {
   Burger,
   Button,
   Container,
+  Group,
   Menu,
   NumberInput,
   Paper,
-  rem,
   Table,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
@@ -13,58 +13,54 @@ import { IconBell, IconEdit, IconTrash } from "@tabler/icons-react";
 import { useDeleteItem, useItems, useUpdateItem } from "@api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
-import styles from "./styles.module.css";
 import { ItemWithNotesAndLabels } from "@types";
 import { Item, Label } from "@prisma/client";
 import { UpdateItemModal } from "../../../modals/UpdateItem";
 import { UpdateReminderSettings } from "@components/ReminderSettings/ReminderSettings";
 import { CreateItemModal } from "../../../modals/CreateItem";
+import { notifications } from "@mantine/notifications";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return <Container size="xl">Loading...</Container>;
+
+  if (error) return <Container size="xl">Error: {error.message}</Container>;
 
   return (
-    <Container>
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Quantity</Table.Th>
-            <Table.Th>Unit</Table.Th>
-            <Table.Th>Expiry Type</Table.Th>
-            <Table.Th>Expiry Date</Table.Th>
-            <Table.Th>Status</Table.Th>
-            <Table.Th>Labels</Table.Th>
-            <Table.Th>Notes</Table.Th>
-            <Table.Th>Actions</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
+    <Container size="xl" py="xl">
+      <Paper shadow="sm" p="md" radius="md" withBorder>
+        <Table striped highlightOnHover>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Name</Table.Th>
+              <Table.Th w={"var(--mantine-spacing-xl)"}>Quantity</Table.Th>
+              <Table.Th>Unit</Table.Th>
+              <Table.Th>Expiry Type</Table.Th>
+              <Table.Th>Expiry Date</Table.Th>
+              <Table.Th>Status</Table.Th>
+              <Table.Th>Labels</Table.Th>
+              <Table.Th>Notes</Table.Th>
+              <Table.Th w={"var(--mantine-spacing-xl)"}>Actions</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
 
-        {items?.map((item) => (
-          <ItemRow key={item.id} item={item} />
-        ))}
-      </Table>
+          <Table.Tbody>
+            {items?.map((item) => (
+              <ItemRow key={item.id} item={item} />
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Paper>
 
-      <Container style={{ position: "fixed", bottom: 50, right: 50 }}>
+      <Container
+        pos="fixed"
+        bottom="var(--mantine-spacing-md)"
+        right="var(--mantine-spacing-md)"
+      >
         <AddItemBtn />
       </Container>
     </Container>
-  );
-}
-
-function LabelSwatch({ label }: { label: Label }) {
-  return (
-    <Paper
-      p="xs"
-      shadow="sm"
-      className={styles.labelSwatch}
-      style={{ backgroundColor: label.colour }}
-    >
-      <span>{label.name}</span>
-    </Paper>
   );
 }
 
@@ -73,16 +69,34 @@ function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
   const { mutate: updateItem } = useUpdateItem();
 
   const handleQuantityChange = useDebouncedCallback((value: number) => {
-    updateItem({
-      ...item,
-      quantity: value,
-      expiryDate: new Date(item.expiryDate),
-    });
+    updateItem(
+      {
+        ...item,
+        quantity: value,
+        expiryDate: new Date(item.expiryDate),
+      },
+      {
+        onSuccess: () => {
+          notifications.show({
+            title: "Success",
+            message: "Item updated successfully",
+            color: "green",
+          });
+        },
+        onError: (error) => {
+          notifications.show({
+            title: "Error",
+            message: error.message,
+            color: "red",
+          });
+        },
+      }
+    );
   }, 1000);
 
   return (
     <Table.Tr>
-      <Table.Td>{item.name}</Table.Td>
+      <Table.Td fw={500}>{item.name}</Table.Td>
       <Table.Td>
         <NumberInput
           value={quantity}
@@ -90,18 +104,28 @@ function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
             setQuantity(value as number);
             handleQuantityChange(value as number);
           }}
+          min={0}
+          size="xs"
         />
       </Table.Td>
       <Table.Td>{item.unit}</Table.Td>
       <Table.Td>{item.expiryType}</Table.Td>
       <Table.Td>{item.expiryDate.toLocaleDateString()}</Table.Td>
       <Table.Td>
-        {new Date() < new Date(item.expiryDate) ? "in date" : "expired"}
+        <Paper
+          p={4}
+          bg={new Date() < new Date(item.expiryDate) ? "#e7f5e7" : "#ffe6e6"}
+          display="inline-block"
+        >
+          {new Date() < new Date(item.expiryDate) ? "In Date" : "Expired"}
+        </Paper>
       </Table.Td>
-      <Table.Td style={{ display: "flex", flexWrap: "wrap" }}>
-        {item.labels.map((label) => (
-          <LabelSwatch key={label.id} label={label} />
-        ))}
+      <Table.Td>
+        <Group gap="xs">
+          {item.labels.map((label) => (
+            <LabelSwatch key={label.id} label={label} />
+          ))}
+        </Group>
       </Table.Td>
       <Table.Td>{item.notes.map((note) => note.note).join(", ")}</Table.Td>
       <Table.Td>
@@ -115,25 +139,23 @@ function ItemActions({ item }: { item: Item }) {
   const { mutate: deleteItem } = useDeleteItem();
 
   return (
-    <Menu shadow="md" width={200}>
+    <Menu shadow="md" width={200} position="bottom-end">
       <Menu.Target>
-        <Burger />
+        <Burger size="sm" />
       </Menu.Target>
 
       <Menu.Dropdown>
         <Menu.Item
-          leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
+          leftSection={<IconEdit size={14} />}
           onClick={() =>
-            modals.open({
-              children: <UpdateItemModal itemId={item.id} />,
-            })
+            modals.open({ children: <UpdateItemModal itemId={item.id} /> })
           }
         >
           Edit Item
         </Menu.Item>
 
         <Menu.Item
-          leftSection={<IconBell style={{ width: rem(14), height: rem(14) }} />}
+          leftSection={<IconBell size={14} />}
           onClick={() =>
             modals.open({
               children: <UpdateReminderSettings itemId={item.id} />,
@@ -144,9 +166,7 @@ function ItemActions({ item }: { item: Item }) {
         </Menu.Item>
 
         <Menu.Item
-          leftSection={
-            <IconTrash style={{ width: rem(14), height: rem(14) }} />
-          }
+          leftSection={<IconTrash size={14} />}
           onClick={() => deleteItem(item.id)}
           color="red"
         >
@@ -157,16 +177,21 @@ function ItemActions({ item }: { item: Item }) {
   );
 }
 
-export function AddItemBtn() {
+function AddItemBtn() {
   return (
     <Button
-      onClick={() =>
-        modals.open({
-          children: <CreateItemModal />,
-        })
-      }
+      size="md"
+      onClick={() => modals.open({ children: <CreateItemModal /> })}
     >
-      + item
+      + Item
     </Button>
+  );
+}
+
+function LabelSwatch({ label }: { label: Label }) {
+  return (
+    <Paper p={4} bg={label.colour} display="inline-block">
+      {label.name}
+    </Paper>
   );
 }

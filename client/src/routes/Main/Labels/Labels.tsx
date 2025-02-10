@@ -1,4 +1,4 @@
-import { Burger, Button, Container, Menu, rem, Table } from "@mantine/core";
+import { Burger, Button, Container, Menu, Paper, Table } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { useDeleteLabel, useGetLabels } from "@api/label";
@@ -9,48 +9,51 @@ import { UpdateLabelModal } from "../../../modals/UpdateLabel";
 export function Labels() {
   const { data: labels, isLoading, error } = useGetLabels();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading) return <Container size="xl">Loading...</Container>;
+  if (error) return <Container size="xl">Error: {error.message}</Container>;
 
   return (
-    <Container>
-      <Table>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Name</Table.Th>
-            <Table.Th>Colour</Table.Th>
-            <Table.Th>Description</Table.Th>
-            <Table.Th>Actions</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
+    <Container size="xl" py="xl">
+      <Paper shadow="sm" p="md" radius="md" withBorder>
+        <Table striped highlightOnHover>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Name</Table.Th>
+              <Table.Th>Colour</Table.Th>
+              <Table.Th>Description</Table.Th>
+              <Table.Th>Actions</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
 
-        {labels?.map((label) => (
-          <Table.Tr key={label.id}>
-            <Table.Td>{label.name}</Table.Td>
-            <Table.Td>
-              <div
-                style={{
-                  backgroundColor: label.colour,
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "4px",
-                }}
-              />
-            </Table.Td>
-            <Table.Td>{label.description}</Table.Td>
-            <Table.Td>
-              <LabelActions label={label} />
-            </Table.Td>
-          </Table.Tr>
-        ))}
-      </Table>
+          <Table.Tbody>
+            {labels?.map((label) => (
+              <Table.Tr key={label.id}>
+                <Table.Td>{label.name}</Table.Td>
+                <Table.Td>
+                  <Paper bg={label.colour} w={20} h={20} radius="sm" />
+                </Table.Td>
+                <Table.Td>{label.description}</Table.Td>
+                <Table.Td>
+                  <LabelActions label={label} />
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Paper>
 
-      <Button
-        onClick={() => modals.open({ children: <CreateLabelModal /> })}
-        mt="md"
+      <Container
+        pos="fixed"
+        bottom="var(--mantine-spacing-md)"
+        right="var(--mantine-spacing-md)"
       >
-        Add Label
-      </Button>
+        <Button
+          size="md"
+          onClick={() => modals.open({ children: <CreateLabelModal /> })}
+        >
+          + Label
+        </Button>
+      </Container>
     </Container>
   );
 }
@@ -66,7 +69,7 @@ function LabelActions({ label }: { label: Label }) {
 
       <Menu.Dropdown>
         <Menu.Item
-          leftSection={<IconEdit style={{ width: rem(14), height: rem(14) }} />}
+          leftSection={<IconEdit size={14} />}
           onClick={() =>
             modals.open({
               children: <UpdateLabelModal label={label} />,
@@ -77,9 +80,7 @@ function LabelActions({ label }: { label: Label }) {
         </Menu.Item>
 
         <Menu.Item
-          leftSection={
-            <IconTrash style={{ width: rem(14), height: rem(14) }} />
-          }
+          leftSection={<IconTrash size={14} />}
           onClick={() => deleteLabel(label.id)}
           color="red"
         >

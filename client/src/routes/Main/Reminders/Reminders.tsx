@@ -60,6 +60,9 @@ export function Reminders() {
       {defaultReminder && (
         <Card
           withBorder
+          shadow="sm"
+          p="md"
+          radius="md"
           bg="gray.0"
           style={{ borderColor: "var(--mantine-color-gray-3)" }}
         >
@@ -104,7 +107,7 @@ export function Reminders() {
       {reminders
         ?.filter((r) => r.itemId)
         .map((reminder) => (
-          <Card key={reminder.id} withBorder>
+          <Card key={reminder.id} withBorder shadow="sm" p="md" radius="md">
             <Stack>
               <Group justify="space-between">
                 <Text fw={500}>{reminder.item?.name}</Text>
