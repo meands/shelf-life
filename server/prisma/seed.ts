@@ -34,6 +34,36 @@ async function main() {
     ],
   });
 
+  await prisma.reminder.createMany({
+    data: [
+      {
+        userId: 1,
+        isEnabled: true,
+        daysBeforeExpiry: 10,
+      },
+      {
+        userId: 2,
+        isEnabled: true,
+        daysBeforeExpiry: 20,
+      },
+      {
+        userId: 3,
+        isEnabled: true,
+        daysBeforeExpiry: 30,
+      },
+      {
+        userId: 4,
+        isEnabled: true,
+        daysBeforeExpiry: 40,
+      },
+      {
+        userId: 5,
+        isEnabled: true,
+        daysBeforeExpiry: 50,
+      },
+    ],
+  });
+
   await prisma.item.createMany({
     data: [
       {

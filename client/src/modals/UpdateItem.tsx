@@ -10,7 +10,7 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useItem, useUpdateItem } from "@api/item";
 import { NoteFields } from "@components/NoteFields/NoteFields";
-import { ItemWithNotesAndLabels, UpdateItemRequest } from "@types";
+import { EnrichedItem, UpdateItemRequest } from "@types";
 import { modals } from "@mantine/modals";
 import { UseMutateFunction } from "@tanstack/react-query";
 
@@ -27,12 +27,8 @@ function UpdateItemForm({
   item,
   updateItem,
 }: {
-  item: ItemWithNotesAndLabels;
-  updateItem: UseMutateFunction<
-    ItemWithNotesAndLabels,
-    Error,
-    UpdateItemRequest
-  >;
+  item: EnrichedItem;
+  updateItem: UseMutateFunction<EnrichedItem, Error, UpdateItemRequest>;
 }) {
   const form = useForm({
     initialValues: {

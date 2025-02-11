@@ -6,8 +6,8 @@ export { CreateLabelRequest, UpdateLabelRequest } from "@shared/types";
 export { CreateNoteRequest, UpdateNoteRequest } from "@shared/types";
 export { ApiResponse, ErrorResponse } from "@shared/types";
 
-export type ItemWithNotesAndLabels = Prisma.ItemGetPayload<{
-  include: { notes: true; labels: true };
+export type EnrichedItem = Prisma.ItemGetPayload<{
+  include: { notes: true; labels: true; reminders: true };
 }>;
 
 export type ReminderWithItem = Prisma.ReminderGetPayload<{

@@ -8,6 +8,7 @@ export function useGetLabels() {
     queryKey: ["labels"],
     queryFn: () =>
       axiosInstance.get("/labels").then((res) =>
+        // @ts-expect-error
         // label is jsonified, parsing it to Label object here
         res.data.map((label) => ({
           ...label,
@@ -26,7 +27,7 @@ export function useCreateLabel() {
     mutationFn: async (label: CreateLabelRequest) =>
       axiosInstance.post("/labels", label).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["labels"] });
+      queryClient.invalidateQueries();
     },
   });
 }
@@ -39,9 +40,7 @@ export function useUpdateLabel() {
     mutationFn: async (label: UpdateLabelRequest) =>
       axiosInstance.put(`/labels/${label.id}`, label).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["labels"],
-      });
+      queryClient.invalidateQueries();
     },
   });
 }
@@ -53,7 +52,7 @@ export function useDeleteLabel() {
     mutationFn: async (labelId: number) =>
       axiosInstance.delete(`/labels/${labelId}`).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["labels"] });
+      queryClient.invalidateQueries();
     },
   });
 }

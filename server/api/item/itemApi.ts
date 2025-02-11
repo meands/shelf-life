@@ -26,6 +26,7 @@ router.get("/", async (req: Request, res: Response) => {
             createdAt: "asc",
           },
         },
+        reminders: true,
       },
       orderBy: [
         {

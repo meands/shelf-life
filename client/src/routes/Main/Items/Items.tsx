@@ -6,26 +6,47 @@ import {
   Menu,
   NumberInput,
   Paper,
+  Stack,
+  Switch,
   Table,
+  Text,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconBell, IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+  IconBell,
+  IconBellOff,
+  IconEdit,
+  IconTrash,
+} from "@tabler/icons-react";
 import { useDeleteItem, useItems, useUpdateItem } from "@api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
-import { ItemWithNotesAndLabels } from "@types";
-import { Item, Label } from "@prisma/client";
+import { EnrichedItem } from "@types";
+import { Label } from "@prisma/client";
 import { UpdateItemModal } from "../../../modals/UpdateItem";
-import { UpdateReminderSettings } from "@components/ReminderSettings/ReminderSettings";
 import { CreateItemModal } from "../../../modals/CreateItem";
 import { notifications } from "@mantine/notifications";
+import { useDefaultReminder, useUpsertReminder } from "@api/reminder";
+import { Reminder } from "@prisma/client";
+import { ReminderSettings } from "@components/ReminderSettings/ReminderSettings";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
+  const {
+    data: defaultReminder,
+    isLoading: isDefaultReminderLoading,
+    error: defaultReminderError,
+  } = useDefaultReminder();
 
-  if (isLoading) return <Container size="xl">Loading...</Container>;
+  if (isLoading || isDefaultReminderLoading)
+    return <Container size="xl">Loading...</Container>;
 
-  if (error) return <Container size="xl">Error: {error.message}</Container>;
+  if (error || defaultReminderError)
+    return (
+      <Container size="xl">
+        Error: {error?.message || defaultReminderError?.message}
+      </Container>
+    );
 
   return (
     <Container size="xl" py="xl">
@@ -41,32 +62,49 @@ export function Items() {
               <Table.Th>Status</Table.Th>
               <Table.Th>Labels</Table.Th>
               <Table.Th>Notes</Table.Th>
+              <Table.Th>Reminder</Table.Th>
               <Table.Th w={"var(--mantine-spacing-xl)"}>Actions</Table.Th>
             </Table.Tr>
           </Table.Thead>
 
           <Table.Tbody>
             {items?.map((item) => (
-              <ItemRow key={item.id} item={item} />
+              <ItemRow
+                key={item.id}
+                item={item}
+                defaultReminder={defaultReminder}
+              />
             ))}
           </Table.Tbody>
         </Table>
-      </Paper>
 
-      <Container
-        pos="fixed"
-        bottom="var(--mantine-spacing-md)"
-        right="var(--mantine-spacing-md)"
-      >
-        <AddItemBtn />
-      </Container>
+        <Container
+          pos="fixed"
+          bottom="var(--mantine-spacing-md)"
+          right="var(--mantine-spacing-md)"
+        >
+          <AddItemBtn />
+        </Container>
+      </Paper>
     </Container>
   );
 }
 
-function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
+function ItemRow({
+  item,
+  defaultReminder,
+}: {
+  item: EnrichedItem;
+  defaultReminder?: Reminder;
+}) {
   const [quantity, setQuantity] = useState(item.quantity);
   const { mutate: updateItem } = useUpdateItem();
+  const { mutate: upsertReminder } = useUpsertReminder();
+
+  const reminderEnabled =
+    (item.reminders?.[0]?.isEnabled ||
+      (defaultReminder?.isEnabled && !item.reminders?.[0])) ??
+    false;
 
   const handleQuantityChange = useDebouncedCallback((value: number) => {
     updateItem(
@@ -94,6 +132,38 @@ function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
     );
   }, 1000);
 
+  const handleReminderToggle = (reminder?: Reminder) => {
+    upsertReminder(
+      reminder
+        ? {
+            ...reminder,
+            isEnabled: !reminderEnabled,
+            itemId: item.id,
+          }
+        : {
+            isEnabled: !reminderEnabled,
+            itemId: item.id,
+            daysBeforeExpiry: defaultReminder?.daysBeforeExpiry ?? -1, // -1 indicates err
+          },
+      {
+        onSuccess: () => {
+          notifications.show({
+            title: "Success",
+            message: "Reminder updated successfully",
+            color: "green",
+          });
+        },
+        onError: (error) => {
+          notifications.show({
+            title: "Error",
+            message: error.message,
+            color: "red",
+          });
+        },
+      }
+    );
+  };
+
   return (
     <Table.Tr>
       <Table.Td fw={500}>{item.name}</Table.Td>
@@ -111,6 +181,7 @@ function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
       <Table.Td>{item.unit}</Table.Td>
       <Table.Td>{item.expiryType}</Table.Td>
       <Table.Td>{item.expiryDate.toLocaleDateString()}</Table.Td>
+
       <Table.Td>
         <Paper
           p={4}
@@ -128,6 +199,37 @@ function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
         </Group>
       </Table.Td>
       <Table.Td>{item.notes.map((note) => note.note).join(", ")}</Table.Td>
+
+      <Table.Td>
+        <Group>
+          <Switch
+            checked={reminderEnabled}
+            onChange={() => handleReminderToggle(item.reminders?.[0])}
+            thumbIcon={
+              reminderEnabled ? (
+                <IconBell size="0.8rem" stroke={3} />
+              ) : (
+                <IconBellOff size="0.8rem" stroke={3} />
+              )
+            }
+          />
+
+          {item.reminders?.[0]?.isEnabled ? (
+            <Text size="sm" c="dimmed">
+              {item.reminders?.[0].daysBeforeExpiry} days before
+            </Text>
+          ) : defaultReminder?.isEnabled && !item.reminders?.[0] ? (
+            <Text size="sm" c="dimmed">
+              Default: {defaultReminder?.daysBeforeExpiry} days before
+            </Text>
+          ) : (
+            <Text size="sm" c="dimmed">
+              No reminder
+            </Text>
+          )}
+        </Group>
+      </Table.Td>
+
       <Table.Td>
         <ItemActions item={item} />
       </Table.Td>
@@ -135,7 +237,7 @@ function ItemRow({ item }: { item: ItemWithNotesAndLabels }) {
   );
 }
 
-function ItemActions({ item }: { item: Item }) {
+function ItemActions({ item }: { item: EnrichedItem }) {
   const { mutate: deleteItem } = useDeleteItem();
 
   return (
@@ -158,7 +260,12 @@ function ItemActions({ item }: { item: Item }) {
           leftSection={<IconBell size={14} />}
           onClick={() =>
             modals.open({
-              children: <UpdateReminderSettings itemId={item.id} />,
+              children: (
+                <ReminderSettings
+                  itemId={item.id}
+                  reminder={item.reminders?.[0]}
+                />
+              ),
             })
           }
         >

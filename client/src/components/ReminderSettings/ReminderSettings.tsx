@@ -1,79 +1,74 @@
 import { Button, Group, NumberInput, Stack, Switch } from "@mantine/core";
-import {
-  useCreateReminder,
-  useItemReminder,
-  useUpdateReminder,
-} from "@api/reminder";
+import { useUpsertReminder, useDefaultReminder } from "@api/reminder";
 import { useState } from "react";
-import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import { UseMutateFunction } from "@tanstack/react-query";
+import { Reminder } from "@prisma/client";
+import { CreateReminderRequest, UpdateReminderRequest } from "@shared/types";
 
-const defaultDays = 7;
+export function ReminderSettings({
+  itemId,
+  reminder,
+}: {
+  itemId?: number;
+  reminder?: Reminder;
+}) {
+  const { data: defaultReminder, isLoading: isLoadingDefaultReminder } =
+    useDefaultReminder();
+  const { mutate: upsertReminder } = useUpsertReminder();
 
-export function CreateReminderSettings({ itemId }: { itemId?: number }) {
-  const { mutate: createReminder } = useCreateReminder();
-  const [daysBeforeExpiry, setDaysBeforeExpiry] = useState(defaultDays);
-  const [isEnabled, setIsEnabled] = useState(true);
-
-  const handleSave = () => {
-    createReminder(
-      { daysBeforeExpiry, isEnabled, itemId },
-      {
-        onSuccess: () => {
-          notifications.show({
-            title: "Success",
-            message: "Reminder created",
-            color: "green",
-          });
-          modals.closeAll();
-        },
-        onError: (error) => {
-          notifications.show({
-            title: "Error",
-            message: error.message,
-            color: "red",
-          });
-        },
-      }
-    );
-  };
-
+  if (isLoadingDefaultReminder) return <div>Loading...</div>;
   return (
-    <ReminderForm
-      daysBeforeExpiry={daysBeforeExpiry}
-      setDaysBeforeExpiry={setDaysBeforeExpiry}
-      isEnabled={isEnabled}
-      setIsEnabled={setIsEnabled}
-      onSave={handleSave}
+    <ReminderSettingsPresentation
+      itemId={itemId}
+      reminder={reminder}
+      defaultReminder={defaultReminder}
+      upsertReminder={upsertReminder}
     />
   );
 }
 
-export function UpdateReminderSettings({ itemId }: { itemId: number }) {
-  const { data: reminder } = useItemReminder(itemId);
-  const { mutate: updateReminder } = useUpdateReminder();
-
+function ReminderSettingsPresentation({
+  itemId,
+  reminder,
+  defaultReminder,
+  upsertReminder,
+}: {
+  itemId?: number;
+  reminder?: Reminder;
+  defaultReminder?: Reminder;
+  upsertReminder: UseMutateFunction<
+    Reminder,
+    Error,
+    CreateReminderRequest | UpdateReminderRequest,
+    unknown
+  >;
+}) {
   const [daysBeforeExpiry, setDaysBeforeExpiry] = useState(
-    reminder?.daysBeforeExpiry ?? defaultDays
+    reminder?.daysBeforeExpiry ?? defaultReminder?.daysBeforeExpiry ?? -1 // -1 indicates error - should not happen since there will always be a default reminder
   );
   const [isEnabled, setIsEnabled] = useState(reminder?.isEnabled ?? true);
 
   const handleSave = () => {
-    if (!reminder) return;
-
-    updateReminder(
-      { daysBeforeExpiry, isEnabled, itemId, id: reminder.id },
+    upsertReminder(
+      {
+        daysBeforeExpiry,
+        isEnabled,
+        itemId,
+        ...(reminder && { id: reminder.id }),
+      },
       {
         onSuccess: () => {
-          notifications.show({
-            title: "Success",
-            message: "Reminder updated",
+          showNotification({
+            title: "Reminder updated",
+            message: `Reminder ${reminder ? "updated" : "created"}`,
             color: "green",
           });
           modals.closeAll();
         },
         onError: (error) => {
-          notifications.show({
+          showNotification({
             title: "Error",
             message: error.message,
             color: "red",

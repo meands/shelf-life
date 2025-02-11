@@ -23,7 +23,7 @@ export const useCreateUser = () => {
     mutationFn: (newUser: CreateUserRequest) =>
       axiosInstance.post("/users", newUser).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries();
     },
   });
 };
@@ -37,7 +37,7 @@ export const useUpdateUser = () => {
         .put(`/users/${updatedUser.id}`, updatedUser)
         .then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries();
     },
   });
 };
@@ -49,7 +49,7 @@ export const useDeleteUser = () => {
     mutationFn: (id: number) =>
       axiosInstance.delete(`/users/${id}`).then((res) => res.data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries();
     },
   });
 };

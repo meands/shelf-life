@@ -24,7 +24,6 @@ export const useVerifyToken = () => {
       const response = await axiosInstance.get("/users/verify");
       return response.data;
     },
-    retry: false,
     enabled: !!localStorage.getItem("token"),
   });
 };

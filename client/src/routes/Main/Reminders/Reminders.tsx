@@ -1,17 +1,18 @@
 import { Button, Card, Group, Stack, Text, Title } from "@mantine/core";
-import { useReminders, useDeleteReminder } from "@api/reminder";
+import { IconEdit, IconTrash, IconPinnedFilled } from "@tabler/icons-react";
+import {
+  useReminders,
+  useDeleteReminder,
+  useDefaultReminder,
+} from "@api/reminder";
 import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
-import {
-  CreateReminderSettings,
-  UpdateReminderSettings,
-} from "@components/ReminderSettings/ReminderSettings";
+import { ReminderSettings } from "@components/ReminderSettings/ReminderSettings";
 
 export function Reminders() {
+  const { data: defaultReminder } = useDefaultReminder();
   const { data: reminders, isLoading } = useReminders();
   const { mutate: deleteReminder } = useDeleteReminder();
-
-  const defaultReminder = reminders?.find((r) => !r.itemId);
 
   const handleDelete = (id: number) => {
     deleteReminder(id, {
@@ -35,27 +36,14 @@ export function Reminders() {
   const openEditModal = (itemId: number) => {
     modals.open({
       title: "Edit Reminder",
-      children: <UpdateReminderSettings itemId={itemId} />,
+      children: <ReminderSettings itemId={itemId} />,
     });
   };
 
   if (isLoading) return <div>Loading...</div>;
   return (
     <Stack>
-      <Group justify="space-between">
-        <Title order={2}>Reminders</Title>
-
-        <Button
-          onClick={() =>
-            modals.open({
-              title: "Default Reminder Settings",
-              children: <CreateReminderSettings />,
-            })
-          }
-        >
-          Set Default Reminder
-        </Button>
-      </Group>
+      <Title order={2}>Reminders</Title>
 
       {defaultReminder && (
         <Card
@@ -63,87 +51,93 @@ export function Reminders() {
           shadow="sm"
           p="md"
           radius="md"
-          bg="gray.0"
-          style={{ borderColor: "var(--mantine-color-gray-3)" }}
+          bg={defaultReminder.isEnabled ? "gray.0" : "gray.1"}
+          opacity={defaultReminder.isEnabled ? 1 : 0.7}
+          style={{
+            borderColor: "var(--mantine-color-gray-3)",
+          }}
         >
           <Stack>
             <Group justify="space-between">
-              <div>
-                <Text fw={600}>Default Reminder</Text>
-                <Text size="sm">
-                  Applies to all items without specific reminders
-                </Text>
-              </div>
-
-              <Group>
-                <Button
-                  variant="light"
-                  onClick={() => openEditModal(defaultReminder.id)}
-                >
-                  Edit
-                </Button>
-
-                <Button
-                  variant="light"
-                  color="red"
-                  onClick={() => handleDelete(defaultReminder.id)}
-                >
-                  Delete
-                </Button>
+              <Group gap="xs">
+                <IconPinnedFilled
+                  size={16}
+                  style={{ color: "var(--mantine-color-blue-6)" }}
+                />
+                <div>
+                  <Text fw={600}>Default</Text>
+                  <Text size="sm">
+                    Applies to all items without specific reminders
+                  </Text>
+                </div>
               </Group>
+
+              <Button
+                variant="subtle"
+                onClick={() =>
+                  modals.open({
+                    title: "Edit Reminder",
+                    children: <ReminderSettings reminder={defaultReminder} />,
+                  })
+                }
+                p={8}
+              >
+                <IconEdit size={20} />
+              </Button>
             </Group>
 
             <Text>
               Reminder: {defaultReminder.daysBeforeExpiry} days before expiry
             </Text>
-
-            <Text c={defaultReminder.isEnabled ? "green.6" : "red.6"} fw={500}>
-              Status: {defaultReminder.isEnabled ? "Enabled" : "Disabled"}
-            </Text>
           </Stack>
         </Card>
       )}
 
-      {reminders
-        ?.filter((r) => r.itemId)
-        .map((reminder) => (
-          <Card key={reminder.id} withBorder shadow="sm" p="md" radius="md">
-            <Stack>
-              <Group justify="space-between">
-                <Text fw={500}>{reminder.item?.name}</Text>
+      {reminders?.map((reminder) => (
+        <Card
+          key={reminder.id}
+          withBorder
+          shadow="sm"
+          p="md"
+          radius="md"
+          bg={reminder.isEnabled ? undefined : "gray.1"}
+          style={{ opacity: reminder.isEnabled ? 1 : 0.7 }}
+        >
+          <Stack>
+            <Group justify="space-between">
+              <Text fw={500}>{reminder.item?.name}</Text>
 
-                <Group>
-                  <Button
-                    variant="light"
-                    onClick={() => openEditModal(reminder.itemId!)}
-                  >
-                    Edit
-                  </Button>
+              <Group>
+                <Button
+                  variant="subtle"
+                  onClick={() => openEditModal(reminder.itemId!)}
+                  p={8}
+                >
+                  <IconEdit size={20} />
+                </Button>
 
-                  <Button
-                    variant="light"
-                    color="red"
-                    onClick={() => handleDelete(reminder.id)}
-                  >
-                    Delete
-                  </Button>
-                </Group>
+                <Button
+                  variant="subtle"
+                  color="red"
+                  onClick={() => handleDelete(reminder.id)}
+                  p={8}
+                >
+                  <IconTrash size={20} />
+                </Button>
               </Group>
+            </Group>
 
-              <Text>
-                Reminder: {reminder.daysBeforeExpiry} days before expiry
-              </Text>
-              <Text c={reminder.isEnabled ? "green.6" : "red.6"} fw={500}>
-                Status: {reminder.isEnabled ? "Enabled" : "Disabled"}
-              </Text>
-            </Stack>
-          </Card>
-        ))}
+            <Text>
+              Reminder: {reminder.daysBeforeExpiry} days before expiry
+            </Text>
+          </Stack>
+        </Card>
+      ))}
 
       {reminders?.length === 0 && (
         <Text c="dimmed" ta="center">
-          No reminders set. Create a default reminder or set reminders for
-          specific items.
+          No reminders set. All items will be reminded{" "}
+          {defaultReminder?.daysBeforeExpiry} days before expiry.
         </Text>
       )}
     </Stack>

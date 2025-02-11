@@ -10,6 +10,9 @@ router.get("/", async (req: Request, res: Response) => {
     const reminders = await prisma.reminder.findMany({
       where: {
         userId: (req as any).user.id,
+        itemId: {
+          not: null,
+        },
       },
       include: {
         item: true,
@@ -30,7 +33,38 @@ router.get("/item/:itemId", async (req: Request, res: Response) => {
   res.status(200).json(reminder);
 });
 
-// Create reminder
+// get user's default reminder
+router.get("/default", async (req: Request, res: Response) => {
+  const defaultReminder = await prisma.reminder.findFirst({
+    where: { userId: (req as any).user.id, itemId: null },
+  });
+  res.status(200).json(defaultReminder);
+});
+
+// Upsert reminder
+router.put(
+  "/",
+  async (
+    req: Request<{}, {}, CreateReminderRequest | UpdateReminderRequest>,
+    res: Response
+  ) => {
+    try {
+      const reminder = await prisma.reminder.upsert({
+        where: { id: (req.body as UpdateReminderRequest)?.id || -1 },
+        update: req.body,
+        create: {
+          ...req.body,
+          userId: (req as any).user.id,
+        },
+      });
+      res.status(200).json(reminder);
+    } catch (error) {
+      console.error("Error upserting reminder:", error);
+      res.status(500).json({ message: "Error upserting reminder" });
+    }
+  }
+);
+
 router.post(
   "/",
   async (req: Request<{}, {}, CreateReminderRequest>, res: Response) => {
