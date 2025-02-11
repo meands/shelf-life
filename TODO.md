@@ -2,6 +2,7 @@ expiry date tracker
 
 ## TODO
 
+- [ ] separate page for notes (could be good to link recipes etc)
 - [ ] notifications for when expiry is close
   - [x] reminder page
   - [x] item specific reminder should inherit from user global settings
@@ -13,7 +14,6 @@ expiry date tracker
   - [ ] reminders page
 - [ ] improve type export mechanism
 - [ ] flexible sorting on items table
-- [ ] label swatch
 - [ ] access control based on user role
 
   - [x] add user id to item records and test on /items/:id
@@ -36,3 +36,4 @@ expiry date tracker
 - [x] move away from context modals
 - [x] go through logic for default reminder and when its disabled, and when default/item reminder doesn't exist
 - [x] react query cache invalidation flaky (e.g. creating item, label)
+- [x] label swatch

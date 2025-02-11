@@ -1,4 +1,5 @@
 import {
+  Badge,
   Burger,
   Button,
   Container,
@@ -6,7 +7,6 @@ import {
   Menu,
   NumberInput,
   Paper,
-  Stack,
   Switch,
   Table,
   Text,
@@ -55,14 +55,14 @@ export function Items() {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Name</Table.Th>
+              <Table.Th>Status</Table.Th>
+              <Table.Th>Expiry Date</Table.Th>
+              <Table.Th>Expiry Type</Table.Th>
               <Table.Th w={"var(--mantine-spacing-xl)"}>Quantity</Table.Th>
               <Table.Th>Unit</Table.Th>
-              <Table.Th>Expiry Type</Table.Th>
-              <Table.Th>Expiry Date</Table.Th>
-              <Table.Th>Status</Table.Th>
               <Table.Th>Labels</Table.Th>
-              <Table.Th>Notes</Table.Th>
               <Table.Th>Reminder</Table.Th>
+              <Table.Th>Notes</Table.Th>
               <Table.Th w={"var(--mantine-spacing-xl)"}>Actions</Table.Th>
             </Table.Tr>
           </Table.Thead>
@@ -168,6 +168,13 @@ function ItemRow({
     <Table.Tr>
       <Table.Td fw={500}>{item.name}</Table.Td>
       <Table.Td>
+        <Badge color={new Date() < new Date(item.expiryDate) ? "green" : "red"}>
+          {new Date() < new Date(item.expiryDate) ? "In Date" : "Expired"}
+        </Badge>
+      </Table.Td>
+      <Table.Td>{item.expiryDate.toLocaleDateString()}</Table.Td>
+      <Table.Td>{item.expiryType}</Table.Td>
+      <Table.Td>
         <NumberInput
           value={quantity}
           onChange={(value) => {
@@ -179,18 +186,6 @@ function ItemRow({
         />
       </Table.Td>
       <Table.Td>{item.unit}</Table.Td>
-      <Table.Td>{item.expiryType}</Table.Td>
-      <Table.Td>{item.expiryDate.toLocaleDateString()}</Table.Td>
-
-      <Table.Td>
-        <Paper
-          p={4}
-          bg={new Date() < new Date(item.expiryDate) ? "#e7f5e7" : "#ffe6e6"}
-          display="inline-block"
-        >
-          {new Date() < new Date(item.expiryDate) ? "In Date" : "Expired"}
-        </Paper>
-      </Table.Td>
       <Table.Td>
         <Group gap="xs">
           {item.labels.map((label) => (
@@ -198,8 +193,6 @@ function ItemRow({
           ))}
         </Group>
       </Table.Td>
-      <Table.Td>{item.notes.map((note) => note.note).join(", ")}</Table.Td>
-
       <Table.Td>
         <Group>
           <Switch
@@ -229,7 +222,7 @@ function ItemRow({
           )}
         </Group>
       </Table.Td>
-
+      <Table.Td>{item.notes.map((note) => note.note).join(", ")}</Table.Td>
       <Table.Td>
         <ItemActions item={item} />
       </Table.Td>
@@ -296,9 +289,5 @@ function AddItemBtn() {
 }
 
 function LabelSwatch({ label }: { label: Label }) {
-  return (
-    <Paper p={4} bg={label.colour} display="inline-block">
-      {label.name}
-    </Paper>
-  );
+  return <Badge color={label.colour}>{label.name}</Badge>;
 }
