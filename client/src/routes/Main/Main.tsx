@@ -1,6 +1,6 @@
-import { AppShell, Burger, Group, NavLink } from "@mantine/core";
+import { AppShell, Burger, Button, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconBell, IconHome, IconTag } from "@tabler/icons-react";
+import { IconBell, IconHome, IconLogout, IconTag } from "@tabler/icons-react";
 import { Link, Outlet, useLocation } from "react-router";
 
 export function Main() {
@@ -18,9 +18,22 @@ export function Main() {
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
-          <Burger opened={opened} onClick={toggle} size="sm" />
-          Expiry Tracker
+        <Group h="100%" px="md" justify="space-between">
+          <Group>
+            <Burger opened={opened} onClick={toggle} size="sm" />
+            Expiry Tracker
+          </Group>
+
+          <Button
+            variant="transparent"
+            size="sm"
+            onClick={() => {
+              localStorage.removeItem("token");
+              window.location.href = "/login";
+            }}
+          >
+            <IconLogout />
+          </Button>
         </Group>
       </AppShell.Header>
 
