@@ -2,7 +2,9 @@ expiry date tracker
 
 ## TODO
 
+- [ ] add label field to item forms
 - [ ] separate page for notes (could be good to link recipes etc)
+- [ ] buttons are inconsistent
 - [ ] notifications for when expiry is close
   - [x] reminder page
   - [x] item specific reminder should inherit from user global settings

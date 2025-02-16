@@ -29,6 +29,7 @@ import { notifications } from "@mantine/notifications";
 import { useDefaultReminder, useUpsertReminder } from "@api/reminder";
 import { Reminder } from "@prisma/client";
 import { ReminderSettings } from "@components/ReminderSettings/ReminderSettings";
+import { ScanBarcodeForProduct } from "../../../modals/ScanBarcode";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
@@ -84,6 +85,7 @@ export function Items() {
           right="var(--mantine-spacing-md)"
         >
           <AddItemBtn />
+          <ScanBarcodeBtn />
         </Container>
       </Paper>
     </Container>
@@ -284,6 +286,17 @@ function AddItemBtn() {
       onClick={() => modals.open({ children: <CreateItemModal /> })}
     >
       + Item
+    </Button>
+  );
+}
+
+function ScanBarcodeBtn() {
+  return (
+    <Button
+      size="md"
+      onClick={() => modals.open({ children: <ScanBarcodeForProduct /> })}
+    >
+      Scan Barcode
     </Button>
   );
 }

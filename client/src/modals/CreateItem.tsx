@@ -11,8 +11,13 @@ import { notifications } from "@mantine/notifications";
 import { useCreateItem } from "@api/item";
 import { NoteFields } from "@components/NoteFields/NoteFields";
 import { modals } from "@mantine/modals";
+import { EnrichedItem } from "@types";
 
-export function CreateItemModal() {
+export function CreateItemModal({
+  initialValues,
+}: {
+  initialValues?: Partial<EnrichedItem>;
+}) {
   const { mutate: createItem, isPending } = useCreateItem();
 
   const form = useForm({
@@ -24,6 +29,7 @@ export function CreateItemModal() {
       expiryType: "Best before",
       labels: [],
       notes: [{ note: "" }],
+      ...initialValues,
     },
   });
 
