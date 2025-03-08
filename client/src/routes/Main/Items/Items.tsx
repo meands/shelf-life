@@ -17,6 +17,9 @@ import {
   IconBellOff,
   IconEdit,
   IconTrash,
+  IconPlus,
+  IconBarcode,
+  IconChefHat,
 } from "@tabler/icons-react";
 import { useDeleteItem, useItems, useUpdateItem } from "@api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
@@ -281,13 +284,18 @@ function ItemActions({ item }: { item: EnrichedItem }) {
   );
 }
 
+function LabelSwatch({ label }: { label: Label }) {
+  return <Badge color={label.colour}>{label.name}</Badge>;
+}
+
 function AddItemBtn() {
   return (
     <Button
       size="md"
+      variant="subtle"
       onClick={() => modals.open({ children: <CreateItemModal /> })}
     >
-      + Item
+      <IconPlus size={20} />
     </Button>
   );
 }
@@ -296,24 +304,22 @@ function ScanBarcodeBtn() {
   return (
     <Button
       size="md"
+      variant="subtle"
       onClick={() => modals.open({ children: <ScanBarcodeForProduct /> })}
     >
-      Scan Barcode
+      <IconBarcode size={20} />
     </Button>
   );
-}
-
-function LabelSwatch({ label }: { label: Label }) {
-  return <Badge color={label.colour}>{label.name}</Badge>;
 }
 
 function GenerateRecipeBtn() {
   return (
     <Button
       size="md"
+      variant="subtle"
       onClick={() => modals.open({ children: <GenerateRecipes /> })}
     >
-      Generate Recipe
+      <IconChefHat size={20} />
     </Button>
   );
 }
