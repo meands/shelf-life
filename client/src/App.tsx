@@ -14,12 +14,13 @@ import { Items } from "./routes/Main/Items/Items";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { Labels } from "./routes/Main/Labels/Labels";
+import { LabelDetails } from "./routes/Main/Labels/LabelDetails";
 import { Reminders } from "./routes/Main/Reminders/Reminders";
 import axios from "axios";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "http://0.0.0.0:3000",
 });
 
 axiosInstance.interceptors.request.use((config) => {
@@ -74,6 +75,7 @@ function AppRoutes() {
         <Route index element={<Navigate to="/items" replace />} />
         <Route path="items" element={<Items />} />
         <Route path="labels" element={<Labels />} />
+        <Route path="labels/:id" element={<LabelDetails />} />
         <Route path="reminders" element={<Reminders />} />
       </Route>
     </Routes>

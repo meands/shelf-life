@@ -56,3 +56,25 @@ export function useDeleteLabel() {
     },
   });
 }
+
+export function useGetLabel(labelId: number) {
+  return useQuery({
+    queryKey: ["label", labelId],
+    queryFn: () =>
+      axiosInstance.get(`/labels/${labelId}`).then((res) => {
+        const label = res.data;
+        return {
+          ...label,
+          createdAt: new Date(label.createdAt),
+          updatedAt: new Date(label.updatedAt),
+          items: label.items.map((item: any) => ({
+            ...item,
+            createdAt: new Date(item.createdAt),
+            updatedAt: new Date(item.updatedAt),
+            expiryDate: new Date(item.expiryDate),
+          })),
+        };
+      }),
+    enabled: !!labelId,
+  });
+}

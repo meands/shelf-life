@@ -2,6 +2,8 @@ expiry date tracker
 
 ## TODO
 
+- [ ] fix camera on mobile
+- [ ] fix layout on mobile
 - [ ] add label field to item forms
 - [ ] separate page for notes (could be good to link recipes etc)
 - [ ] buttons are inconsistent

@@ -5,6 +5,7 @@ import { useDeleteLabel, useGetLabels } from "@api/label";
 import { Label } from "@prisma/client";
 import { CreateLabelModal } from "../../../modals/CreateLabel";
 import { UpdateLabelModal } from "../../../modals/UpdateLabel";
+import { Link } from "react-router";
 
 export function Labels() {
   const { data: labels, isLoading, error } = useGetLabels();
@@ -28,7 +29,9 @@ export function Labels() {
           <Table.Tbody>
             {labels?.map((label) => (
               <Table.Tr key={label.id}>
-                <Table.Td>{label.name}</Table.Td>
+                <Table.Td>
+                  <Link to={`/labels/${label.id}`}>{label.name}</Link>
+                </Table.Td>
                 <Table.Td>
                   <Paper bg={label.colour} w={20} h={20} radius="sm" />
                 </Table.Td>

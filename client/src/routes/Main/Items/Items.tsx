@@ -30,6 +30,7 @@ import { useDefaultReminder, useUpsertReminder } from "@api/reminder";
 import { Reminder } from "@prisma/client";
 import { ReminderSettings } from "@components/ReminderSettings/ReminderSettings";
 import { ScanBarcodeForProduct } from "../../../modals/ScanBarcode";
+import { GenerateRecipes } from "../../../modals/GenerateRecipes";
 
 export function Items() {
   const { data: items, isLoading, error } = useItems();
@@ -86,6 +87,7 @@ export function Items() {
         >
           <AddItemBtn />
           <ScanBarcodeBtn />
+          <GenerateRecipeBtn />
         </Container>
       </Paper>
     </Container>
@@ -303,4 +305,15 @@ function ScanBarcodeBtn() {
 
 function LabelSwatch({ label }: { label: Label }) {
   return <Badge color={label.colour}>{label.name}</Badge>;
+}
+
+function GenerateRecipeBtn() {
+  return (
+    <Button
+      size="md"
+      onClick={() => modals.open({ children: <GenerateRecipes /> })}
+    >
+      Generate Recipe
+    </Button>
+  );
 }
