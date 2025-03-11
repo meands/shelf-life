@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { SignInRequest, SignInResponse } from "@shared/types";
+import { SignInRequest, SignInResponse } from "@expiry-tracker/shared/types";
 import { axiosInstance } from "../App";
 import { User } from "@prisma/client";
 

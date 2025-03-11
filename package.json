@@ -1,0 +1,16 @@
+{
+  "name": "expiry-tracker-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=client & npm run start --workspace=server",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces"
+  }
+}

@@ -1,17 +1,16 @@
-import "module-alias/register";
+const moduleAlias = require("module-alias");
+moduleAlias(__dirname + "/package.json");
 
 import express from "express";
 import cors from "cors";
 
-import { signIn } from "@api/auth/authApi";
-
-import itemRouter from "@api/item/itemApi";
-import labelRouter from "@api/label/labelApi";
-import noteRouter from "@api/note/noteApi";
-import userRouter from "@api/user/userApi";
-import { authenticateUser } from "@middleware/auth";
-import reminderRouter from "@api/reminder/reminderApi";
-import recipeRouter from "@api/recipe/recipeApi";
+import { signIn, authenticateUser } from "@api/auth/auth";
+import itemRouter from "@api/item/router";
+import labelRouter from "@api/label/router";
+import noteRouter from "@api/note/router";
+import userRouter from "@api/user/router";
+import reminderRouter from "@api/reminder/router";
+import recipeRouter from "@api/recipe/router";
 
 const app = express();
 

@@ -54,10 +54,13 @@ function RegisterForm() {
       displayName: "",
     },
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
-      displayName: (value) => (value.length < 2 ? "Name is too short" : null),
-      password: (value) => (value.length < 6 ? "Password is too short" : null),
-      confirmPassword: (value, values) =>
+      email: (value: string) =>
+        /^\S+@\S+$/.test(value) ? null : "Invalid email",
+      displayName: (value: string) =>
+        value.length < 2 ? "Name is too short" : null,
+      password: (value: string) =>
+        value.length < 6 ? "Password is too short" : null,
+      confirmPassword: (value: string, values: any) =>
         value !== values.password ? "Passwords do not match" : null,
     },
   });
@@ -138,7 +141,8 @@ function LoginForm() {
       password: "",
     },
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      email: (value: string) =>
+        /^\S+@\S+$/.test(value) ? null : "Invalid email",
     },
   });
 

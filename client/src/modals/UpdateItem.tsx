@@ -10,7 +10,7 @@ import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useItem, useUpdateItem } from "@api/item";
 import { NoteFields } from "@components/NoteFields/NoteFields";
-import { EnrichedItem, UpdateItemRequest } from "@types";
+import { EnrichedItem, UpdateItemRequest } from "@expiry-tracker/shared/types";
 import { modals } from "@mantine/modals";
 import { UseMutateFunction } from "@tanstack/react-query";
 

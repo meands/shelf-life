@@ -11,7 +11,7 @@ import { notifications } from "@mantine/notifications";
 import { useCreateItem } from "@api/item";
 import { NoteFields } from "@components/NoteFields/NoteFields";
 import { modals } from "@mantine/modals";
-import { EnrichedItem } from "@types";
+import { EnrichedItem } from "@expiry-tracker/shared/types";
 
 export function CreateItemModal({
   initialValues,

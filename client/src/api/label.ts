@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../App";
-import { CreateLabelRequest, UpdateLabelRequest } from "@shared/types";
+import {
+  CreateLabelRequest,
+  UpdateLabelRequest,
+} from "@expiry-tracker/shared/types";
 import { Label } from "@prisma/client";
 
 export function useGetLabels() {

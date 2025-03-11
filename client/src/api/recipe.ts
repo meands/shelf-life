@@ -1,4 +1,4 @@
-import { EnrichedItem } from "@types";
+import { EnrichedItem } from "@expiry-tracker/shared/types";
 
 export interface GenerateRecipesRequest {
   ingredients?: {

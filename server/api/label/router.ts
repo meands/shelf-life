@@ -1,8 +1,7 @@
 import express, { Request, Response } from "express";
 import { CreateLabelRequest, UpdateLabelRequest } from "@shared/types";
-import prisma from "../../services/db";
-import { Prisma } from "@prisma/client";
-import { authenticateUser } from "../../middleware/auth";
+import prisma from "@expiry-tracker/shared/prisma/prisma";
+import { authenticateUser } from "@api/auth/auth";
 
 const router = express.Router();
 

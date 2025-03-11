@@ -2,7 +2,7 @@ import { Button, ColorInput, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useUpdateLabel } from "@api/label";
-import { UpdateLabelRequest } from "@shared/types";
+import { UpdateLabelRequest } from "@expiry-tracker/shared/types";
 import { Label } from "@prisma/client";
 import { modals } from "@mantine/modals";
 

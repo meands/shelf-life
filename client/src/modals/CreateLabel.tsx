@@ -2,7 +2,7 @@ import { Button, ColorInput, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useCreateLabel } from "@api/label";
-import { CreateLabelRequest } from "@shared/types";
+import { CreateLabelRequest } from "@expiry-tracker/shared/types";
 import { modals } from "@mantine/modals";
 
 export function CreateLabelModal() {

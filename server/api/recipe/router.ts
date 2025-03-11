@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
-import { streamResponse } from "../../integrations/llm/completions";
+import { streamResponse } from "@services/llm/completions";
+
 const router = express.Router();
 
 router.post("/generate", async (req: Request, res: Response) => {

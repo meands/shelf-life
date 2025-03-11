@@ -5,7 +5,10 @@ import { modals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { UseMutateFunction } from "@tanstack/react-query";
 import { Reminder } from "@prisma/client";
-import { CreateReminderRequest, UpdateReminderRequest } from "@shared/types";
+import {
+  CreateReminderRequest,
+  UpdateReminderRequest,
+} from "@expiry-tracker/shared/types";
 
 export function ReminderSettings({
   itemId,

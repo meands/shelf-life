@@ -1,5 +1,5 @@
 import { partition } from "@shared/utils/arr";
-import prisma from "./db";
+import prisma from "@expiry-tracker/shared/prisma/prisma";
 import nodemailer from "nodemailer";
 
 interface ItemToNotify {

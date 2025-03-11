@@ -2,6 +2,8 @@ expiry date tracker
 
 ## TODO
 
+- [ ] where does prisma go?
+- [ ] proxy for openfoodfacts for rate limiting
 - [ ] fix camera on mobile
 - [ ] fix layout on mobile
 - [ ] add label field to item forms

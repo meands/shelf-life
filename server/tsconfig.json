@@ -1,21 +1,21 @@
 {
     "extends": "../tsconfig.json",
-    "target": "ES2022",
-    "lib": ["ES2023"],
-    "module": "ESNext",
-    "skipLibCheck": true,
     "compilerOptions": {
+        "module": "CommonJS",
+        "esModuleInterop": true,
+        "composite": true,
+        "outDir": "dist",
         "baseUrl": ".",
         "paths": {
-            "@shared/*": ["../shared/*"],
-            "@types": ["types/index"],
             "@api/*": ["api/*"],
-            "@middleware/*": ["middleware/*"],
             "@data/*": ["data/*"],
-            "@utils/*": ["utils/*"]
-        },
-        "outDir": "../dist/server"
+            "@shared/*": ["../shared/*"],
+            "@services/*": ["services/*"]
+        }
     },
-    "include": ["**/*", "../shared/**/*"],
-    "exclude": ["node_modules", "dist"]
-  }
+    "include": ["./**/*.ts"],
+    "exclude": ["dist"],
+    "references": [
+        { "path": "../shared" }
+    ]
+}

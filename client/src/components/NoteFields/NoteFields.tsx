@@ -1,7 +1,7 @@
 import { ActionIcon, Button, Group, Stack, TextInput } from "@mantine/core";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
-import { NoteWithOptionalId } from "@shared/types";
-import { GetInputProps } from "node_modules/@mantine/form/lib/types";
+import { NoteWithOptionalId } from "@expiry-tracker/shared/types";
+import { GetInputProps } from "@mantine/form/types"; // TODO: is there a way to import this without specifying exactly which file?
 
 interface NoteFieldsProps {
   notes: NoteWithOptionalId[];

@@ -1,4 +1,5 @@
-// Authentication
+import { Prisma } from "@prisma/client";
+
 export interface SignInRequest {
   email: string;
   password: string;
@@ -95,7 +96,6 @@ export interface UpdateUserRequest {
   role?: string;
 }
 
-// API Responses
 export interface ApiResponse<T> {
   data: T;
   message?: string;
@@ -105,3 +105,11 @@ export interface ErrorResponse {
   message: string;
   error?: string;
 }
+
+export type EnrichedItem = Prisma.ItemGetPayload<{
+  include: { notes: true; labels: true; reminders: true };
+}>;
+
+export type ReminderWithItem = Prisma.ReminderGetPayload<{
+  include: { item: true };
+}>;

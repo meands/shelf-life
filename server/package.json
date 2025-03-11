@@ -1,9 +1,9 @@
 {
-  "name": "expiry-tracker",
+  "name": "@expiry-tracker/server",
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
-    "start": "nodemon server.ts",
+    "start": "nodemon --exec node -r ts-node/register --env-file=.env server.ts",
     "build": "tsc",
     "reset": "prisma migrate reset --force",
     "clean-start": "npm run reset && npm run start",
@@ -17,6 +17,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@expiry-tracker/shared": "1.0.0",
     "@prisma/client": "^6.2.1",
     "@types/nodemailer": "^6.4.17",
     "argon2": "^0.41.1",
@@ -43,9 +44,7 @@
   },
   "_moduleAliases": {
     "@api": "api",
-    "@middleware": "middleware",
     "@data": "data",
-    "@types": "types",
-    "@shared": "./../shared"
+    "@services": "services"
   }
 }

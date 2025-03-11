@@ -1,5 +1,5 @@
 {
-  "name": "shelf-life",
+  "name": "@expiry-tracker/client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
+    "@expiry-tracker/shared": "1.0.0",
     "@mantine/core": "^7.15.2",
     "@mantine/form": "^7.15.2",
     "@mantine/hooks": "^7.15.2",

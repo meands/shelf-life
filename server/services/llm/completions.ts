@@ -36,5 +36,5 @@ function frameChunk(data: string) {
 }
 
 function readPrompt() {
-  return fs.readFileSync(path.resolve(__dirname, "../prompt.txt"), "utf8");
+  return fs.readFileSync(path.resolve(__dirname, "./prompt.txt"), "utf8");
 }

@@ -1,12 +1,12 @@
 import express, { Request, Response } from "express";
 import { CreateUserRequest, UpdateUserRequest } from "@shared/types";
 import jwt from "jsonwebtoken";
-import prisma from "../../services/db";
+import prisma from "@expiry-tracker/shared/prisma/prisma";
 import { hash } from "argon2";
 import { Prisma } from "@prisma/client";
-import { authenticateUser } from "../../middleware/auth";
+import { authenticateUser } from "../auth/auth";
 
-const jwtKey = process.env.TOKEN_SECRET || "default-secret-key";
+const jwtKey = process.env.TOKEN_SECRET as string;
 const jwtExpirySeconds = 60000;
 
 const router = express.Router();

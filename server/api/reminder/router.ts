@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import prisma from "../../services/db";
+import prisma from "@expiry-tracker/shared/prisma/prisma";
 import { CreateReminderRequest, UpdateReminderRequest } from "@shared/types";
 
 const router = express.Router();

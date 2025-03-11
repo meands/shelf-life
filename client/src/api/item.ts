@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../App";
-import { CreateItemRequest, UpdateItemRequest } from "@shared/types";
-import { EnrichedItem } from "@types";
+import {
+  CreateItemRequest,
+  UpdateItemRequest,
+} from "@expiry-tracker/shared/types";
+import { EnrichedItem } from "@expiry-tracker/shared/types";
 
 export const useItems = () => {
   return useQuery<EnrichedItem[]>({

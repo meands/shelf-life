@@ -24,7 +24,7 @@ import {
 import { useDeleteItem, useItems, useUpdateItem } from "@api/item";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { useState } from "react";
-import { EnrichedItem } from "@types";
+import { EnrichedItem } from "@expiry-tracker/shared/types";
 import { Label } from "@prisma/client";
 import { UpdateItemModal } from "../../../modals/UpdateItem";
 import { CreateItemModal } from "../../../modals/CreateItem";
