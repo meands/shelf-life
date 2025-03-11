@@ -8,28 +8,31 @@ const deepseek = new OpenAI({
   apiKey: process.env.MODEL_API_KEY,
 });
 
-export function newChat() {
+export async function* streamResponse(message: { [key: string]: unknown }) {
   const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: readPrompt() },
+    { role: "user", content: JSON.stringify(message) },
   ];
 
-  async function appendMessage(message: { [key: string]: unknown }) {
-    messages.push({ role: "user", content: JSON.stringify(message) });
+  const response = await deepseek.chat.completions.create({
+    model: "deepseek-chat",
+    messages,
+    stream: true,
+    max_completion_tokens: 500,
+  });
 
-    const response = await deepseek.chat.completions.create({
-      model: "deepseek-chat",
-      messages,
-    });
-
-    messages.push({
-      role: "assistant",
-      content: response.choices[0].message.content,
-    });
-
-    return response.choices[0].message.content;
+  for await (const chunk of response) {
+    if (
+      chunk.choices[0].delta.content &&
+      chunk.choices[0].delta.content.length > 0
+    ) {
+      yield frameChunk(chunk.choices[0].delta.content);
+    }
   }
+}
 
-  return appendMessage;
+function frameChunk(data: string) {
+  return `data: ${data}\n\n`;
 }
 
 function readPrompt() {

@@ -36,7 +36,7 @@ router.get("/item/:itemId", async (req: Request, res: Response) => {
 // get user's default reminder
 router.get("/default", async (req: Request, res: Response) => {
   const defaultReminder = await prisma.reminder.findFirst({
-    where: { userId: (req as any).user.id, itemId: null },
+    where: { userId: (req as any).user?.id, itemId: null },
   });
   res.status(200).json(defaultReminder);
 });

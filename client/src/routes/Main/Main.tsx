@@ -21,7 +21,6 @@ export function Main() {
 
   const MenuItem = (route: (typeof routes)[keyof typeof routes]) => {
     const commonProps = {
-      key: route.path,
       label: route.label,
       leftSection: <route.icon size="1rem" />,
       to: route.path,
@@ -31,7 +30,7 @@ export function Main() {
       component: route.path !== "#" ? Link : undefined,
     };
 
-    return <NavLink {...commonProps} />;
+    return <NavLink key={route.label} {...commonProps} />;
   };
 
   return (

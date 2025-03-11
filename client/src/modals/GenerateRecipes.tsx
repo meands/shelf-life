@@ -1,23 +1,26 @@
 import { Button, Checkbox, Loader, Stack, Text } from "@mantine/core";
-import { useGenerateRecipes } from "@api/recipe";
 import { useItems } from "@api/item";
 import { useState } from "react";
+import untruncateJson from "untruncate-json";
+import { generateRecipes } from "@api/recipe";
 
 export function GenerateRecipes() {
   const { data: items, isLoading: isLoadingItems } = useItems();
-  const {
-    mutateAsync: generateRecipes,
-    isPending,
-    data: recipes,
-  } = useGenerateRecipes();
-
+  const [recipes, setRecipes] = useState<string>("");
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const selectedItemObjects = items?.filter((item) =>
       selectedItems.includes(item.id)
     );
-    selectedItemObjects && generateRecipes(selectedItemObjects);
+    if (selectedItemObjects) {
+      setIsGenerating(true);
+      for await (const chunk of generateRecipes(selectedItemObjects)) {
+        setRecipes((prev) => prev + chunk);
+      }
+      setIsGenerating(false);
+    }
   };
 
   if (isLoadingItems) {
@@ -63,7 +66,7 @@ export function GenerateRecipes() {
       ))}
       <Button
         onClick={handleSubmit}
-        loading={isPending}
+        loading={isGenerating}
         disabled={selectedItems.length === 0}
       >
         Generate Recipes
@@ -72,17 +75,28 @@ export function GenerateRecipes() {
       {recipes && (
         <Stack mt="md">
           <Text fw={500}>Generated Recipes:</Text>
-          {recipes.recipes.map((recipe, index) => (
-            <Stack key={index} gap="xs">
-              <Text fw={500}>{recipe.name}</Text>
-              <Text size="sm">
-                Ingredients: {recipe.ingredients.join(", ")}
-              </Text>
-              <Text size="sm">{recipe.instructions}</Text>
-            </Stack>
-          ))}
+          {safeParse(untruncateJson(recipes))?.recipes?.map(
+            (recipe: any, index: number) => (
+              <Stack key={index}>
+                <Text fw={500}>{recipe?.name}</Text>
+                <Text size="sm">
+                  Ingredients: {recipe?.ingredients?.join(", ")}
+                </Text>
+                <Text size="sm">{recipe?.instructions}</Text>
+              </Stack>
+            )
+          )}
         </Stack>
       )}
     </Stack>
   );
+}
+
+function safeParse(json: string) {
+  try {
+    return JSON.parse(json);
+  } catch (error) {
+    console.error("error parsing", error);
+    return {};
+  }
 }

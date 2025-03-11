@@ -1,12 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
-import { axiosInstance } from "../App";
 import { EnrichedItem } from "@types";
 
-interface GenerateRecipesRequest {
-  ingredients: {
-    name: string;
-    quantity: number;
-    expiry: string;
+export interface GenerateRecipesRequest {
+  ingredients?: {
+    name?: string;
+    quantity?: number;
+    expiry?: string;
   }[];
 }
 
@@ -16,24 +14,40 @@ interface Recipe {
   instructions: string;
 }
 
-interface GenerateRecipesResponse {
+export interface GenerateRecipesResponse {
   recipes: Recipe[];
 }
 
-export const useGenerateRecipes = () => {
-  return useMutation<GenerateRecipesResponse, Error, EnrichedItem[]>({
-    mutationKey: ["recipes"],
-    mutationFn: async (items) => {
-      const request: GenerateRecipesRequest = {
-        ingredients: items.map((item) => ({
-          name: item.name,
-          quantity: item.quantity,
-          expiry: item.expiryDate.toISOString(),
-        })),
-      };
-      return axiosInstance
-        .post("/recipes/generate", request)
-        .then((res) => JSON.parse(res.data));
+export async function* generateRecipes(items: EnrichedItem[]) {
+  const request = {
+    ingredients: items.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      expiry: item.expiryDate.toISOString(),
+    })),
+  };
+
+  const response = await fetch("http://localhost:3000/recipes/generate", {
+    method: "POST",
+    cache: "no-cache",
+    keepalive: true,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
     },
+    body: JSON.stringify(request),
   });
-};
+  const reader = response.body?.getReader();
+  if (!reader) return;
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    const chunk = new TextDecoder().decode(value);
+    const subChunks = chunk.split(/\n\ndata: /);
+    for (let subChunk of subChunks) {
+      subChunk = subChunk.replace(/\n\n/, "");
+      yield subChunk.replace(/^data: /, "");
+    }
+  }
+}

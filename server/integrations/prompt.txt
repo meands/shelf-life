@@ -5,24 +5,8 @@ You don't need to use all the ingredients.
 Output three recipes that can be made with the ingredients.
 
 Keep the output concise and to the point.
-Ingredients will be given in the following format:
-{
-    "ingredients": [
-        {
-            "name": "ingredient name",
-            "quantity": "quantity",
-            "expiry": "expiry date"
-        }
-    ]
-}
+Ingredients will be given in JSON format:
+{"ingredients":[{"name":"ingredient name","quantity":"quantity","expiry":"expiry date"}]}
 
-Output the recipes in the following format:
-{
-    "recipes": [
-        {
-            "name": "recipe name",
-            "ingredients": ["ingredient name"],
-            "instructions": "instructions"
-        }
-    ]
-}
+Output the recipes also in JSON format. Do not include line breaks:
+{"recipes":[{"name":"recipe name","ingredients":["ingredient name"],"instructions":"instructions"}]}
